@@ -9,9 +9,9 @@
   <style>
     :root {
       --bg-void: #050507;
-      --bg-panel: rgba(13, 14, 18, 0.82);
-      --bg-elevated: rgba(22, 24, 30, 0.88);
-      --bg-hover: rgba(34, 37, 46, 0.92);
+      --bg-panel: rgba(13, 14, 18, 0.84);
+      --bg-elevated: rgba(22, 24, 30, 0.9);
+      --bg-hover: rgba(34, 37, 46, 0.95);
       --grid-line: rgba(255, 255, 255, 0.032);
       --border: rgba(255, 255, 255, 0.08);
       --border-bright: rgba(255, 255, 255, 0.22);
@@ -22,6 +22,7 @@
       --accent-prism: #a855f7;
       --drop-green: #22c55e;
       --danger: #ef4444;
+      --warning: #f59e0b;
       --btn-contrast-bg: #f4f5f8;
       --btn-contrast-fg: #050507;
       --spotlight: rgba(255, 255, 255, 0.06);
@@ -29,9 +30,9 @@
 
     [data-theme="light"] {
       --bg-void: #eae8e3;
-      --bg-panel: rgba(246, 245, 242, 0.84);
-      --bg-elevated: rgba(255, 255, 255, 0.9);
-      --bg-hover: rgba(235, 233, 228, 0.95);
+      --bg-panel: rgba(246, 245, 242, 0.86);
+      --bg-elevated: rgba(255, 255, 255, 0.92);
+      --bg-hover: rgba(235, 233, 228, 0.96);
       --grid-line: rgba(0, 0, 0, 0.045);
       --border: rgba(0, 0, 0, 0.09);
       --border-bright: rgba(0, 0, 0, 0.22);
@@ -42,6 +43,7 @@
       --accent-prism: #7e22ce;
       --drop-green: #16a34a;
       --danger: #dc2626;
+      --warning: #d97706;
       --btn-contrast-bg: #111216;
       --btn-contrast-fg: #f6f5f2;
       --spotlight: rgba(0, 0, 0, 0.04);
@@ -54,13 +56,10 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
-    .mono {
-      font-family: 'JetBrains Mono', monospace;
-    }
+    .mono { font-family: 'JetBrains Mono', monospace; }
 
     body {
       background-color: var(--bg-void);
-      /* Architectural shader grid from video frame 00:14 */
       background-image:
         linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
         linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
@@ -71,10 +70,9 @@
       flex-direction: column;
       overflow: hidden;
       user-select: none;
-      transition: background-color 0.35s ease, color 0.35s ease;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    /* Ambient prism light beam behind top center */
     body::before {
       content: "";
       position: fixed;
@@ -89,7 +87,7 @@
       z-index: 0;
     }
 
-    /* Top Minimal Header (Inspired by vgpu top nav at 00:00) */
+    /* Header */
     header {
       position: relative;
       z-index: 2;
@@ -109,7 +107,6 @@
       gap: 12px;
     }
 
-    /* Geometric Prism Triangle Emblem */
     .prism-mark {
       width: 0;
       height: 0;
@@ -120,26 +117,10 @@
       transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    .brand:hover .prism-mark {
-      transform: translateY(-2px) scale(1.08);
-    }
-
-    .brand-title {
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: -0.2px;
-    }
-
-    .brand-divider {
-      color: var(--text-muted);
-      font-size: 13px;
-    }
-
-    .brand-sub {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--text-secondary);
-    }
+    .brand:hover .prism-mark { transform: translateY(-2px) scale(1.08); }
+    .brand-title { font-size: 14px; font-weight: 600; letter-spacing: -0.2px; }
+    .brand-divider { color: var(--text-muted); font-size: 13px; }
+    .brand-sub { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-secondary); }
 
     .header-actions {
       display: flex;
@@ -183,7 +164,7 @@
     .btn-contrast:hover { transform: translateY(-1px); opacity: 0.92; }
     .btn-contrast:active { transform: scale(0.97); }
 
-    .theme-toggle {
+    .icon-btn {
       background: var(--bg-elevated);
       border: 1px solid var(--border);
       color: var(--text-secondary);
@@ -198,12 +179,21 @@
       transition: all 0.18s ease;
     }
 
-    .theme-toggle:hover {
+    .icon-btn:hover {
       color: var(--text-primary);
       border-color: var(--border-bright);
     }
 
-    /* Main Workspace Shell */
+    .icon-btn.spinning {
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Shell */
     .shell {
       position: relative;
       z-index: 1;
@@ -214,7 +204,6 @@
       overflow: hidden;
     }
 
-    /* Spotlight Glass Panel */
     .glass-panel {
       position: relative;
       background: var(--bg-panel);
@@ -235,11 +224,9 @@
       transition: opacity 0.3s ease;
     }
 
-    .glass-panel:hover::after {
-      opacity: 1;
-    }
+    .glass-panel:hover::after { opacity: 1; }
 
-    /* Left Sidebar */
+    /* Sidebar */
     .sidebar {
       width: 248px;
       padding: 16px;
@@ -255,13 +242,13 @@
       letter-spacing: 1px;
       text-transform: uppercase;
       color: var(--text-muted);
-      padding: 0 10px;
+      padding: 0 6px;
       margin-bottom: 8px;
     }
 
     .segmented-switch {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
       background: var(--bg-void);
       border: 1px solid var(--border);
       border-radius: 999px;
@@ -270,12 +257,12 @@
     }
 
     .seg-btn {
-      padding: 7px 10px;
+      padding: 7px 6px;
       border-radius: 999px;
       border: none;
       background: transparent;
       color: var(--text-secondary);
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 500;
       cursor: pointer;
       transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
@@ -292,7 +279,7 @@
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 12px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .telemetry-row {
@@ -305,9 +292,26 @@
       padding: 4px 0;
     }
 
-    .telemetry-val {
-      color: var(--text-primary);
-      font-weight: 600;
+    .telemetry-val { color: var(--text-primary); font-weight: 600; }
+
+    .shortcut-hints {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .kbd {
+      background: var(--bg-void);
+      border: 1px solid var(--border-bright);
+      color: var(--text-secondary);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 9.5px;
     }
 
     .brand-footer-card {
@@ -315,18 +319,8 @@
       padding-top: 12px;
     }
 
-    .brand-footer-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-
-    .brand-footer-desc {
-      font-size: 11px;
-      color: var(--text-secondary);
-      margin-top: 3px;
-      line-height: 1.4;
-    }
+    .brand-footer-title { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+    .brand-footer-desc { font-size: 11px; color: var(--text-secondary); margin-top: 3px; line-height: 1.4; }
 
     /* Center Stage */
     .stage {
@@ -344,17 +338,8 @@
       margin-bottom: 16px;
     }
 
-    .stage-title {
-      font-size: 26px;
-      font-weight: 600;
-      letter-spacing: -0.6px;
-    }
-
-    .stage-sub {
-      font-size: 12.5px;
-      color: var(--text-secondary);
-      margin-top: 3px;
-    }
+    .stage-title { font-size: 24px; font-weight: 600; letter-spacing: -0.5px; }
+    .stage-sub { font-size: 12.5px; color: var(--text-secondary); margin-top: 3px; }
 
     .status-chip {
       display: inline-flex;
@@ -377,7 +362,6 @@
       box-shadow: 0 0 10px var(--drop-green);
     }
 
-    /* Scrollable List Area */
     .list-surface {
       flex: 1;
       overflow-y: auto;
@@ -393,7 +377,6 @@
       border-radius: 99px;
     }
 
-    /* Channel & Role Items */
     @keyframes nodeAppear {
       from { opacity: 0; transform: translateY(5px); }
       to { opacity: 1; transform: translateY(0); }
@@ -421,19 +404,16 @@
       background: var(--bg-hover);
     }
 
-    .item-row.in-category {
-      margin-left: 22px;
-    }
-
+    .item-row.in-category { margin-left: 22px; }
     .item-row.category {
       background: transparent;
       border: 1px dashed var(--border-bright);
       margin-top: 10px;
     }
-
     .item-row.category:first-child { margin-top: 0; }
+    .item-row.locked { opacity: 0.72; }
 
-    /* Lifted Drag Animation */
+    /* Lifted Drag State */
     .item-row.dragging {
       opacity: 0.95;
       transform: scale(1.02) rotate(0.3deg);
@@ -442,7 +422,7 @@
       z-index: 30;
     }
 
-    /* Glowing Green Drop Line */
+    /* Glowing Green Drop Indicator Line */
     .item-row.drop-before::before {
       content: "";
       position: absolute;
@@ -503,6 +483,26 @@
     .inline-input:focus {
       background: var(--bg-void);
       border-color: var(--border-bright);
+    }
+
+    .topic-pill {
+      font-size: 11px;
+      color: var(--text-muted);
+      max-width: 150px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .lock-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--warning);
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      padding: 3px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
     }
 
     .hud-btn {
@@ -572,7 +572,41 @@
       cursor: pointer;
     }
 
-    /* Right Shader-Inspector HUD (Inspired by lil-gui panel at 00:14 & 00:24) */
+    /* Blueprints Separated View */
+    .blueprint-box {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 6px 0;
+    }
+
+    .blueprint-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .blueprint-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+    .blueprint-card p { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.5; }
+
+    .json-area {
+      width: 100%;
+      height: 170px;
+      background: var(--bg-void);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      padding: 12px;
+      resize: none;
+      outline: none;
+      margin-bottom: 10px;
+      user-select: text;
+    }
+
+    /* Right Inspector HUD */
     .inspector-hud {
       width: 310px;
       display: flex;
@@ -625,10 +659,7 @@
       margin-bottom: 2px;
     }
 
-    .hud-footer {
-      padding: 12px;
-      border-top: 1px solid var(--border);
-    }
+    .hud-footer { padding: 12px; border-top: 1px solid var(--border); }
 
     .empty-state {
       text-align: center;
@@ -639,11 +670,11 @@
       line-height: 1.6;
     }
 
-    /* Permissions Modal */
+    /* Modals */
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(4, 5, 7, 0.78);
+      background: rgba(4, 5, 7, 0.8);
       backdrop-filter: blur(10px);
       display: flex;
       align-items: center;
@@ -652,15 +683,15 @@
     }
 
     .modal-card {
-      width: 520px;
-      max-height: 82vh;
+      width: 550px;
+      max-height: 84vh;
       background: var(--bg-panel);
       border: 1px solid var(--border-bright);
       border-radius: 14px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.72);
     }
 
     .modal-head {
@@ -671,22 +702,20 @@
       justify-content: space-between;
     }
 
-    .modal-head h3 {
-      font-size: 16px;
-      font-weight: 600;
-    }
+    .modal-head h3 { font-size: 16px; font-weight: 600; }
 
-    .modal-role-bar {
+    .modal-sub-bar {
       padding: 12px 18px;
       background: var(--bg-elevated);
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
-    .modal-role-bar select {
+    .modal-sub-bar select {
       flex: 1;
       background: var(--bg-void);
       border: 1px solid var(--border);
@@ -696,6 +725,23 @@
       font-family: 'JetBrains Mono', monospace;
       font-size: 12px;
       outline: none;
+    }
+
+    .preset-pill {
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border-bright);
+      background: var(--bg-void);
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .preset-pill:hover {
+      background: var(--btn-contrast-bg);
+      color: var(--btn-contrast-fg);
     }
 
     .perm-list {
@@ -741,6 +787,51 @@
     .tri-btn.neutral.active { background: var(--bg-hover); color: var(--text-primary); }
     .tri-btn.allow.active { background: rgba(34, 197, 94, 0.22); color: var(--drop-green); font-weight: 600; }
 
+    /* Role Boolean Toggle Switch */
+    .bool-switch {
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      border: 1px solid var(--border);
+      background: var(--bg-void);
+      color: var(--text-secondary);
+      cursor: pointer;
+      min-width: 78px;
+      text-align: center;
+    }
+
+    .bool-switch.enabled {
+      background: rgba(34, 197, 94, 0.2);
+      border-color: rgba(34, 197, 94, 0.5);
+      color: var(--drop-green);
+      font-weight: 600;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .field-group label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .field-group input, .field-group select, .field-group textarea {
+      background: var(--bg-void);
+      border: 1px solid var(--border-bright);
+      color: var(--text-primary);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+      user-select: text;
+    }
+
     .modal-foot {
       padding: 12px 18px;
       border-top: 1px solid var(--border);
@@ -763,21 +854,23 @@
     </div>
 
     <div class="header-actions">
-      <input type="password" id="botToken" class="hud-input" placeholder="BOT_TOKEN" style="width: 205px;" />
-      <input type="text" id="guildId" class="hud-input" placeholder="GUILD_ID" style="width: 165px;" />
+      <input type="password" id="botToken" class="hud-input" placeholder="BOT_TOKEN" style="width: 195px;" />
+      <input type="text" id="guildId" class="hud-input" placeholder="GUILD_ID" style="width: 160px;" />
       <button class="btn-contrast" onclick="loadServer()">Connect →</button>
-      <button class="theme-toggle" id="themeBtn" title="Toggle Obsidian / Alabaster Theme" onclick="toggleTheme()">◐</button>
+      <button class="icon-btn" id="refreshBtn" title="Refresh Server State (Alt+R)" onclick="loadServer(true)">↻</button>
+      <button class="icon-btn" title="Toggle Obsidian / Alabaster Theme" onclick="toggleTheme()">◐</button>
     </div>
   </header>
 
   <div class="shell">
-    <!-- Left Navigation & Telemetry -->
+    <!-- Left Sidebar -->
     <aside class="glass-panel sidebar">
       <div>
         <div class="nav-group-title">Workspace Mode</div>
         <div class="segmented-switch">
           <button class="seg-btn active" id="tabChannels" onclick="switchTab('channels')">Channels</button>
           <button class="seg-btn" id="tabRoles" onclick="switchTab('roles')">Roles</button>
+          <button class="seg-btn" id="tabBlueprints" onclick="switchTab('blueprints')">JSON</button>
         </div>
 
         <div class="nav-group-title">Live Telemetry</div>
@@ -795,22 +888,30 @@
             <span class="telemetry-val" id="queueBadge" style="color: var(--accent-beam);">0</span>
           </div>
         </div>
+
+        <div class="nav-group-title">Shortcuts</div>
+        <div class="shortcut-hints">
+          <div><span class="kbd">Ctrl</span> + <span class="kbd">Z</span> Undo last edit</div>
+          <div><span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> Execute sync</div>
+          <div><span class="kbd">Alt</span> + <span class="kbd">R</span> Refresh server</div>
+          <div><span class="kbd">Esc</span> Close modal</div>
+        </div>
       </div>
 
       <div class="brand-footer-card">
         <div class="brand-footer-title">Becquerel development</div>
         <div class="brand-footer-desc">
-          Zero-latency Discord architecture engine. Hold & drag nodes to restructure categories.
+          Zero-latency Discord architecture studio. Drag nodes to reorder hierarchy & categories.
         </div>
       </div>
     </aside>
 
-    <!-- Center Interactive Canvas -->
+    <!-- Center Stage -->
     <main class="glass-panel stage">
       <div class="stage-header">
         <div>
           <h1 class="stage-title" id="viewHeading">Channels & Categories</h1>
-          <p class="stage-sub" id="viewSubheading">Hold any node to lift & drop across categories, edit inline, or configure permission bitfields.</p>
+          <p class="stage-sub" id="viewSubheading">Hold & drag any channel across categories, edit topics & slowmode, or set permission overwrites.</p>
         </div>
         <div class="status-chip">
           <span class="pulse-node"></span>
@@ -818,12 +919,32 @@
         </div>
       </div>
 
+      <!-- Channels View -->
       <div class="list-surface" id="channelsView">
         <div class="empty-state">[ AWAITING CONNECTION ]<br/>Enter BOT_TOKEN & GUILD_ID above to initialize server graph.</div>
       </div>
+
+      <!-- Roles View -->
       <div class="list-surface hidden" id="rolesView"></div>
 
-      <!-- Bottom Channel Command Bar -->
+      <!-- Separated JSON Blueprints View -->
+      <div class="list-surface hidden" id="blueprintsView">
+        <div class="blueprint-box">
+          <div class="blueprint-card">
+            <h3>Export Server Blueprint (.json)</h3>
+            <p>Generate a portable JSON snapshot of your current channels, categories, topics, and roles so you can back up or replicate this structure later.</p>
+            <button class="btn-contrast" onclick="exportBlueprint()">Generate & Copy JSON</button>
+          </div>
+          <div class="blueprint-card">
+            <h3>Import Blueprint into Queue</h3>
+            <p>Paste a previously exported JSON blueprint below to stage its categories, channels, and roles into your connected server.</p>
+            <textarea class="json-area" id="blueprintInput" placeholder='{"channels": [...], "roles": [...]}'></textarea>
+            <button class="btn-contrast" onclick="importBlueprint()">Stage Blueprint to Queue →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Channel Creator Bar -->
       <div class="command-bar" id="channelComposer">
         <select id="newChannelType" onchange="toggleCategorySelect()">
           <option value="0"># TEXT</option>
@@ -837,7 +958,7 @@
         <button class="btn-contrast" onclick="stageCreateChannel()">+ Stage</button>
       </div>
 
-      <!-- Bottom Role Command Bar -->
+      <!-- Role Creator Bar -->
       <div class="command-bar hidden" id="roleComposer">
         <input type="color" id="newRoleColor" value="#38bdf8" title="Pick Role Color" />
         <input type="text" id="newRoleName" placeholder="Create new role title..." onkeydown="if(event.key==='Enter') stageCreateRole()" />
@@ -845,7 +966,7 @@
       </div>
     </main>
 
-    <!-- Right Shader-Style Inspector HUD -->
+    <!-- Right Action Queue Inspector -->
     <aside class="glass-panel inspector-hud">
       <div class="hud-bar">
         <span>▾ Action Queue (<span id="queueCount">0</span>)</span>
@@ -864,27 +985,89 @@
     </aside>
   </div>
 
-  <!-- Channel & Category Permissions Modal -->
+  <!-- MODAL 1: Channel & Category Permission Overwrites -->
   <div class="modal-backdrop hidden" id="permModal">
     <div class="modal-card">
       <div class="modal-head">
-        <h3 id="permModalTitle">Permissions</h3>
-        <button class="hud-btn" onclick="closePermModal()">ESC</button>
+        <h3 id="permModalTitle">Channel Permissions</h3>
+        <button class="hud-btn" onclick="closeAllModals()">ESC</button>
       </div>
-      <div class="modal-role-bar">
-        <span class="mono" style="font-size: 11px; color: var(--text-secondary);">TARGET_ROLE:</span>
+      <div class="modal-sub-bar">
+        <span class="mono" style="font-size: 11px; color: var(--text-secondary);">ROLE:</span>
         <select id="permRoleSelect" onchange="loadRoleOverwritesIntoModal()"></select>
       </div>
       <div class="perm-list" id="permListContainer"></div>
       <div class="modal-foot">
-        <button class="hud-btn" onclick="closePermModal()">Cancel</button>
+        <button class="hud-btn" onclick="closeAllModals()">Cancel</button>
         <button class="btn-contrast" onclick="stageChannelPermissions()">Stage Overwrite</button>
       </div>
     </div>
   </div>
 
+  <!-- MODAL 2: Channel Topic, Slowmode & NSFW Settings -->
+  <div class="modal-backdrop hidden" id="channelMetaModal">
+    <div class="modal-card" style="width: 460px;">
+      <div class="modal-head">
+        <h3 id="metaModalTitle">Channel Settings</h3>
+        <button class="hud-btn" onclick="closeAllModals()">ESC</button>
+      </div>
+      <div style="padding: 18px;">
+        <div class="field-group" id="topicFieldGroup">
+          <label>CHANNEL TOPIC</label>
+          <textarea id="metaTopicInput" rows="3" placeholder="Set channel guidelines, links, or description..."></textarea>
+        </div>
+        <div class="field-group" id="slowmodeFieldGroup">
+          <label>SLOWMODE COOLDOWN</label>
+          <select id="metaSlowmodeSelect">
+            <option value="0">Off (0s)</option>
+            <option value="5">5 seconds</option>
+            <option value="10">10 seconds</option>
+            <option value="30">30 seconds</option>
+            <option value="60">1 minute</option>
+            <option value="300">5 minutes</option>
+            <option value="900">15 minutes</option>
+            <option value="3600">1 hour</option>
+          </select>
+        </div>
+        <div class="perm-row" id="nsfwFieldGroup">
+          <div>
+            <div class="perm-name">Age-Restricted (NSFW)</div>
+            <div class="perm-desc">Require users to confirm age before viewing</div>
+          </div>
+          <button class="bool-switch" id="metaNsfwBtn" onclick="toggleNsfwState()">OFF</button>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="hud-btn" onclick="closeAllModals()">Cancel</button>
+        <button class="btn-contrast" onclick="stageChannelMeta()">Stage Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Role Powers & Quick Presets -->
+  <div class="modal-backdrop hidden" id="rolePowersModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="rolePowersTitle">Role Powers</h3>
+        <button class="hud-btn" onclick="closeAllModals()">ESC</button>
+      </div>
+      <div class="modal-sub-bar">
+        <span class="mono" style="font-size: 10.5px; color: var(--text-secondary);">PRESETS:</span>
+        <button class="preset-pill" onclick="applyRolePreset('owner')">👑 Owner (Admin)</button>
+        <button class="preset-pill" onclick="applyRolePreset('mod')">🛡️ Moderator</button>
+        <button class="preset-pill" onclick="applyRolePreset('member')">👤 Member</button>
+        <button class="preset-pill" onclick="applyRolePreset('clear')">Clear</button>
+      </div>
+      <div class="perm-list" id="rolePowersList"></div>
+      <div class="modal-foot">
+        <button class="hud-btn" onclick="closeAllModals()">Cancel</button>
+        <button class="btn-contrast" onclick="stageRolePowers()">Stage Role Powers</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    /* Cursor-tracking spotlight across glass panels */
+    /* Cursor-tracking spotlight */
     document.addEventListener('mousemove', (e) => {
       document.querySelectorAll('.glass-panel').forEach(panel => {
         const rect = panel.getBoundingClientRect();
@@ -893,13 +1076,32 @@
       });
     });
 
+    /* Global Keyboard Shortcuts */
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeAllModals();
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+        e.preventDefault();
+        if (state.queue.length > 0) {
+          state.queue.pop();
+          renderQueue();
+          setStatus("UNDID LAST OP");
+        }
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        deployQueue();
+      } else if (e.altKey && e.key.toLowerCase() === 'r') {
+        e.preventDefault();
+        loadServer(true);
+      }
+    });
+
     function toggleTheme() {
       const html = document.documentElement;
-      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      html.setAttribute('data-theme', next);
+      html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
     }
 
-    const PERMISSIONS = [
+    const CHANNEL_PERMS = [
       { key: "VIEW_CHANNEL", bit: 1n << 10n, name: "View Channel", desc: "Allows members to see this channel or category" },
       { key: "MANAGE_CHANNELS", bit: 1n << 4n, name: "Manage Channel", desc: "Allows editing channel name, topic, and settings" },
       { key: "MANAGE_ROLES", bit: 1n << 28n, name: "Manage Permissions", desc: "Allows modifying permission overwrites" },
@@ -914,16 +1116,38 @@
       { key: "MUTE_MEMBERS", bit: 1n << 22n, name: "Mute Members", desc: "Allows server-muting members in voice" }
     ];
 
+    const ROLE_POWERS = [
+      { key: "ADMINISTRATOR", bit: 1n << 3n, name: "Administrator", desc: "Full server access; bypasses all channel restrictions" },
+      { key: "MANAGE_GUILD", bit: 1n << 5n, name: "Manage Server", desc: "Edit server name, region, and invites" },
+      { key: "MANAGE_ROLES", bit: 1n << 28n, name: "Manage Roles", desc: "Create and edit roles lower than this role" },
+      { key: "MANAGE_CHANNELS", bit: 1n << 4n, name: "Manage Channels", desc: "Create, edit, and delete channels & categories" },
+      { key: "MODERATE_MEMBERS", bit: 1n << 40n, name: "Timeout Members", desc: "Put members in temporary timeout" },
+      { key: "KICK_MEMBERS", bit: 1n << 1n, name: "Kick Members", desc: "Remove members from the server" },
+      { key: "BAN_MEMBERS", bit: 1n << 2n, name: "Ban Members", desc: "Permanently ban members from the server" },
+      { key: "MANAGE_MESSAGES", bit: 1n << 13n, name: "Manage Messages", desc: "Delete or pin messages from other members" },
+      { key: "VIEW_CHANNEL", bit: 1n << 10n, name: "View Channels", desc: "Browse default text and voice channels" },
+      { key: "SEND_MESSAGES", bit: 1n << 11n, name: "Send Messages", desc: "Post messages in text channels" },
+      { key: "READ_MESSAGE_HISTORY", bit: 1n << 16n, name: "Read Message History", desc: "View past messages in channels" },
+      { key: "CONNECT", bit: 1n << 20n, name: "Connect (Voice)", desc: "Join voice channels" },
+      { key: "SPEAK", bit: 1n << 21n, name: "Speak (Voice)", desc: "Speak in voice channels" },
+      { key: "MUTE_MEMBERS", bit: 1n << 22n, name: "Mute Voice Members", desc: "Server-mute members in voice channels" }
+    ];
+
     let state = {
       activeTab: 'channels',
       channels: [],
+      originalParents: {}, // Tracks initial parent_id per channel to send clean parent_changes
       allRoles: [],
       roles: [],
+      botTopPosition: 0,
       queue: [],
       editingChannelId: null,
+      editingRoleId: null,
       tempPermStates: {},
+      tempRoleBitfield: 0n,
+      tempNsfw: false,
+      dragType: null, // 'channel' | 'role'
       draggedId: null,
-      dropTargetId: null,
       dropMode: null
     };
 
@@ -933,17 +1157,24 @@
       state.activeTab = tab;
       document.getElementById('tabChannels').classList.toggle('active', tab === 'channels');
       document.getElementById('tabRoles').classList.toggle('active', tab === 'roles');
+      document.getElementById('tabBlueprints').classList.toggle('active', tab === 'blueprints');
+
       document.getElementById('channelsView').classList.toggle('hidden', tab !== 'channels');
       document.getElementById('rolesView').classList.toggle('hidden', tab !== 'roles');
+      document.getElementById('blueprintsView').classList.toggle('hidden', tab !== 'blueprints');
+
       document.getElementById('channelComposer').classList.toggle('hidden', tab !== 'channels');
       document.getElementById('roleComposer').classList.toggle('hidden', tab !== 'roles');
 
       if (tab === 'channels') {
         document.getElementById('viewHeading').innerText = 'Channels & Categories';
-        document.getElementById('viewSubheading').innerText = 'Hold any node to lift & drop across categories, edit inline, or configure permission bitfields.';
-      } else {
+        document.getElementById('viewSubheading').innerText = 'Hold & drag any channel across categories, edit topics & slowmode, or set permission overwrites.';
+      } else if (tab === 'roles') {
         document.getElementById('viewHeading').innerText = 'Roles & Hierarchy';
-        document.getElementById('viewSubheading').innerText = 'Stage custom roles, rename titles, and upload Boost Level 2 icons in batch.';
+        document.getElementById('viewSubheading').innerText = 'Drag unlocked roles to reorder hierarchy, apply quick power presets, or upload Boost Level 2 icons.';
+      } else {
+        document.getElementById('viewHeading').innerText = 'Server Blueprints (JSON)';
+        document.getElementById('viewSubheading').innerText = 'Export your server architecture as JSON or import a saved layout into the staging queue.';
       }
     }
 
@@ -952,12 +1183,15 @@
       document.getElementById('newChannelCategory').classList.toggle('hidden', type === '4');
     }
 
-    async function loadServer() {
+    async function loadServer(isRefresh = false) {
       const token = document.getElementById('botToken').value.trim();
       const guild_id = document.getElementById('guildId').value.trim();
       if (!token || !guild_id) return alert("Enter both BOT_TOKEN and GUILD_ID.");
 
-      setStatus("FETCHING...");
+      const refreshBtn = document.getElementById('refreshBtn');
+      if (isRefresh) refreshBtn.classList.add('spinning');
+      setStatus(isRefresh ? "REFRESHING..." : "FETCHING...");
+
       try {
         const res = await fetch('/api/load', {
           method: 'POST',
@@ -969,6 +1203,10 @@
 
         document.getElementById('guildNameDisplay').innerText = data.guild.name.toUpperCase();
         state.channels = normalizeDiscordTree(data.channels);
+        state.originalParents = {};
+        state.channels.forEach(c => { state.originalParents[c.id] = c.parent_id || null; });
+
+        state.botTopPosition = data.bot_top_position || 0;
         state.allRoles = data.roles;
         state.roles = data.roles.filter(r => r.name !== "@everyone");
         state.queue = [];
@@ -976,6 +1214,8 @@
         setStatus("CONNECTED");
       } catch (err) {
         setStatus("ERR: " + err.message);
+      } finally {
+        refreshBtn.classList.remove('spinning');
       }
     }
 
@@ -1013,6 +1253,7 @@
       renderQueue();
     }
 
+    /* CHANNELS RENDER & DRAG */
     function renderChannels() {
       const container = document.getElementById('channelsView');
       container.innerHTML = '';
@@ -1025,90 +1266,72 @@
         const isCat = ch.type === 4;
         const inCat = !isCat && Boolean(ch.parent_id);
         const prefix = isCat ? '📁' : (ch.type === 2 ? '🔊' : '#');
-        const permBtn = !ch.id.startsWith('temp_')
-          ? `<button class="hud-btn" onclick="openPermModal('${ch.id}')">Perms</button>`
-          : '';
+        const isTemp = ch.id.startsWith('temp_');
+        const topicBadge = (!isCat && ch.topic) ? `<span class="topic-pill" title="${ch.topic}">${ch.topic}</span>` : '';
+
+        const actionBtns = !isTemp ? `
+          ${!isCat ? `<button class="hud-btn" onclick="openMetaModal('${ch.id}')">Topic</button>` : ''}
+          <button class="hud-btn" onclick="openPermModal('${ch.id}')">Perms</button>
+        ` : '';
 
         const row = document.createElement('div');
         row.className = `item-row ${isCat ? 'category' : ''} ${inCat ? 'in-category' : ''}`;
         row.draggable = true;
         row.dataset.id = ch.id;
 
-        row.addEventListener('dragstart', (e) => handleDragStart(e, ch.id));
-        row.addEventListener('dragover', (e) => handleDragOver(e, ch));
+        row.addEventListener('dragstart', (e) => {
+          state.dragType = 'channel';
+          state.draggedId = ch.id;
+          e.dataTransfer.effectAllowed = 'move';
+          setTimeout(() => row.classList.add('dragging'), 0);
+        });
+
+        row.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          if (state.dragType !== 'channel' || !state.draggedId || state.draggedId === ch.id) return;
+          const draggedCh = state.channels.find(c => c.id === state.draggedId);
+          if (!draggedCh) return;
+
+          clearDropIndicators(row);
+          const rect = row.getBoundingClientRect();
+          const offsetY = e.clientY - rect.top;
+
+          if (draggedCh.type !== 4 && ch.type === 4 && offsetY > rect.height * 0.25 && offsetY < rect.height * 0.75) {
+            state.dropMode = 'into';
+            row.classList.add('drop-into-category');
+            return;
+          }
+
+          if (offsetY < rect.height / 2) {
+            state.dropMode = 'before';
+            row.classList.add('drop-before');
+          } else {
+            state.dropMode = 'after';
+            row.classList.add('drop-after');
+          }
+        });
+
         row.addEventListener('dragleave', () => clearDropIndicators(row));
-        row.addEventListener('drop', (e) => handleDrop(e, ch));
-        row.addEventListener('dragend', () => handleDragEnd());
+        row.addEventListener('drop', (e) => handleChannelDrop(e, ch));
+        row.addEventListener('dragend', () => resetDragState());
 
         row.innerHTML = `
           <span class="drag-grip" title="Hold & drag to move">⋮⋮</span>
           <span class="mono" style="color: var(--text-muted); font-size: 12px;">${prefix}</span>
           <input class="inline-input" value="${ch.name}" onchange="stageRenameChannel('${ch.id}', this.value)" />
-          ${permBtn}
+          ${topicBadge}
+          ${actionBtns}
           <button class="hud-btn danger" onclick="stageDeleteChannel('${ch.id}', '${ch.name}')">Del</button>
         `;
         container.appendChild(row);
       });
     }
 
-    /* Drag & Drop */
-    function handleDragStart(e, id) {
-      state.draggedId = id;
-      e.dataTransfer.effectAllowed = 'move';
-      setTimeout(() => {
-        const el = document.querySelector(`.item-row[data-id="${id}"]`);
-        if (el) el.classList.add('dragging');
-      }, 0);
-    }
-
-    function handleDragOver(e, targetCh) {
-      e.preventDefault();
-      if (!state.draggedId || state.draggedId === targetCh.id) return;
-      const draggedCh = state.channels.find(c => c.id === state.draggedId);
-      if (!draggedCh) return;
-
-      const row = e.currentTarget;
-      clearDropIndicators(row);
-      const rect = row.getBoundingClientRect();
-      const offsetY = e.clientY - rect.top;
-
-      if (draggedCh.type !== 4 && targetCh.type === 4) {
-        if (offsetY > rect.height * 0.25 && offsetY < rect.height * 0.75) {
-          state.dropTargetId = targetCh.id;
-          state.dropMode = 'into';
-          row.classList.add('drop-into-category');
-          return;
-        }
-      }
-
-      state.dropTargetId = targetCh.id;
-      if (offsetY < rect.height / 2) {
-        state.dropMode = 'before';
-        row.classList.add('drop-before');
-      } else {
-        state.dropMode = 'after';
-        row.classList.add('drop-after');
-      }
-    }
-
-    function clearDropIndicators(el) {
-      el.classList.remove('drop-before', 'drop-after', 'drop-into-category');
-    }
-
-    function handleDragEnd() {
-      document.querySelectorAll('.item-row').forEach(r => {
-        r.classList.remove('dragging', 'drop-before', 'drop-after', 'drop-into-category');
-      });
-      state.draggedId = null;
-      state.dropTargetId = null;
-      state.dropMode = null;
-    }
-
-    function handleDrop(e, targetCh) {
+    function handleChannelDrop(e, targetCh) {
       e.preventDefault();
       const draggedId = state.draggedId;
       const mode = state.dropMode;
-      handleDragEnd();
+      resetDragState();
       if (!draggedId || draggedId === targetCh.id || !mode) return;
 
       const fromIdx = state.channels.findIndex(c => c.id === draggedId);
@@ -1151,14 +1374,21 @@
 
     function stageChannelReorder(movedCh) {
       const updates = [];
+      const parent_changes = [];
       let catPos = 0;
       let chanPos = 0;
+
       state.channels.forEach(ch => {
         if (ch.id.startsWith('temp_')) return;
         if (ch.type === 4) {
           updates.push({ id: ch.id, position: catPos++ });
         } else {
-          updates.push({ id: ch.id, position: chanPos++, parent_id: ch.parent_id || null });
+          updates.push({ id: ch.id, position: chanPos++ });
+          const origParent = state.originalParents[ch.id] ?? null;
+          const currParent = ch.parent_id || null;
+          if (origParent !== currParent) {
+            parent_changes.push({ id: ch.id, parent_id: currParent });
+          }
         }
       });
 
@@ -1168,7 +1398,20 @@
         ? `Category 📁 ${movedCh.name}`
         : `#${movedCh.name} → ${targetCat ? '📁 ' + targetCat.name : 'Root'}`;
 
-      state.queue.push({ id: uid(), type: 'REORDER_CHANNELS', label: destLabel, data: { updates } });
+      state.queue.push({
+        id: uid(),
+        type: 'REORDER_CHANNELS',
+        label: destLabel,
+        data: { updates, parent_changes }
+      });
+    }
+
+    /* ROLES RENDER, LOCK DETECTION & HIERARCHY DRAG */
+    function isRoleLocked(role) {
+      if (role.id.startsWith('temp_')) return false;
+      if (role.managed) return true; // Bot integration / Nitro booster role
+      if (state.botTopPosition > 0 && role.position >= state.botTopPosition) return true;
+      return false;
     }
 
     function renderRoles() {
@@ -1178,51 +1421,244 @@
         container.innerHTML = '<div class="empty-state">[ NO ROLES LOADED ]</div>';
         return;
       }
+
       state.roles.forEach(role => {
         const hex = role.color ? '#' + role.color.toString(16).padStart(6, '0') : '#8a909e';
+        const locked = isRoleLocked(role);
+        const isTemp = role.id.startsWith('temp_');
+
         const row = document.createElement('div');
-        row.className = 'item-row';
+        row.className = `item-row ${locked ? 'locked' : ''}`;
+        row.draggable = !locked;
+        row.dataset.id = role.id;
+
+        if (!locked) {
+          row.addEventListener('dragstart', (e) => {
+            state.dragType = 'role';
+            state.draggedId = role.id;
+            e.dataTransfer.effectAllowed = 'move';
+            setTimeout(() => row.classList.add('dragging'), 0);
+          });
+
+          row.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            if (state.dragType !== 'role' || !state.draggedId || state.draggedId === role.id) return;
+            clearDropIndicators(row);
+            const rect = row.getBoundingClientRect();
+            if (e.clientY - rect.top < rect.height / 2) {
+              state.dropMode = 'before';
+              row.classList.add('drop-before');
+            } else {
+              state.dropMode = 'after';
+              row.classList.add('drop-after');
+            }
+          });
+
+          row.addEventListener('dragleave', () => clearDropIndicators(row));
+          row.addEventListener('drop', (e) => handleRoleDrop(e, role));
+          row.addEventListener('dragend', () => resetDragState());
+        }
+
+        const rightControls = locked
+          ? `<span class="lock-badge" title="Managed integration or positioned above bot's highest role">🔒 Locked</span>`
+          : `
+            ${!isTemp ? `<button class="hud-btn" onclick="openRolePowersModal('${role.id}')">Powers</button>` : ''}
+            <label class="hud-btn" style="cursor:pointer;">
+              ${role.hasNewIcon ? '✓ Icon' : '+ Icon'}
+              <input type="file" accept="image/png,image/jpeg" style="display:none" onchange="stageRoleIcon('${role.id}', '${role.name}', this)" />
+            </label>
+            <button class="hud-btn danger" onclick="stageDeleteRole('${role.id}', '${role.name}')">Del</button>
+          `;
+
         row.innerHTML = `
+          <span class="drag-grip" style="${locked ? 'opacity:0.25; cursor:not-allowed;' : ''}">⋮⋮</span>
           <span style="width: 10px; height: 10px; border-radius: 50%; background: ${hex}; box-shadow: 0 0 8px ${hex}; flex-shrink: 0;"></span>
-          <input class="inline-input" value="${role.name}" onchange="stageEditRoleName('${role.id}', this.value)" />
-          <label class="hud-btn" style="cursor:pointer;">
-            ${role.hasNewIcon ? '✓ Icon' : '+ Icon'}
-            <input type="file" accept="image/png,image/jpeg" style="display:none" onchange="stageRoleIcon('${role.id}', '${role.name}', this)" />
-          </label>
-          <button class="hud-btn danger" onclick="stageDeleteRole('${role.id}', '${role.name}')">Del</button>
+          <input class="inline-input" value="${role.name}" ${locked ? 'disabled' : `onchange="stageEditRoleName('${role.id}', this.value)"`} />
+          ${rightControls}
         `;
         container.appendChild(row);
       });
     }
 
-    function renderQueue() {
-      const container = document.getElementById('queueList');
-      const count = state.queue.length;
-      document.getElementById('queueCount').innerText = count;
-      document.getElementById('queueBadge').innerText = count;
+    function handleRoleDrop(e, targetRole) {
+      e.preventDefault();
+      const draggedId = state.draggedId;
+      const mode = state.dropMode;
+      resetDragState();
+      if (!draggedId || draggedId === targetRole.id || !mode) return;
 
-      if (count === 0) {
-        container.innerHTML = '<div class="empty-state">No staged mutations.<br/>Edits buffer here at 0ms latency.</div>';
-        return;
+      const fromIdx = state.roles.findIndex(r => r.id === draggedId);
+      if (fromIdx === -1) return;
+      const [moved] = state.roles.splice(fromIdx, 1);
+
+      let targetIdx = state.roles.findIndex(r => r.id === targetRole.id);
+      if (mode === 'after') targetIdx++;
+      state.roles.splice(targetIdx, 0, moved);
+
+      // Compute descending Discord role positions (highest role at top)
+      const total = state.roles.length;
+      const updates = [];
+      state.roles.forEach((r, idx) => {
+        if (!r.id.startsWith('temp_') && !isRoleLocked(r)) {
+          updates.push({ id: r.id, position: total - idx });
+        }
+      });
+
+      state.queue = state.queue.filter(q => q.type !== 'REORDER_ROLES');
+      state.queue.push({
+        id: uid(),
+        type: 'REORDER_ROLES',
+        label: `Moved @${moved.name} in hierarchy`,
+        data: { updates }
+      });
+
+      renderAll();
+    }
+
+    function clearDropIndicators(el) {
+      el.classList.remove('drop-before', 'drop-after', 'drop-into-category');
+    }
+
+    function resetDragState() {
+      document.querySelectorAll('.item-row').forEach(r => {
+        r.classList.remove('dragging', 'drop-before', 'drop-after', 'drop-into-category');
+      });
+      state.dragType = null;
+      state.draggedId = null;
+      state.dropMode = null;
+    }
+
+    /* ROLE POWERS MODAL & QUICK PRESETS */
+    function openRolePowersModal(roleId) {
+      const role = state.roles.find(r => r.id === roleId);
+      if (!role) return;
+      state.editingRoleId = roleId;
+      state.tempRoleBitfield = BigInt(role.permissions || "0");
+      document.getElementById('rolePowersTitle').innerText = `Role Powers: @${role.name}`;
+      renderRolePowersList();
+      document.getElementById('rolePowersModal').classList.remove('hidden');
+    }
+
+    function applyRolePreset(preset) {
+      if (preset === 'owner') {
+        state.tempRoleBitfield = (1n << 3n); // Administrator
+      } else if (preset === 'mod') {
+        // Moderator: View, Manage Channels, Timeout Members (1<<40), Manage Messages, Read History, Voice Mute
+        // Explicitly excludes Administrator (1<<3) and Ban Members (1<<2)
+        state.tempRoleBitfield =
+          (1n << 10n) | // VIEW_CHANNEL
+          (1n << 4n)  | // MANAGE_CHANNELS
+          (1n << 40n) | // MODERATE_MEMBERS (Timeout)
+          (1n << 13n) | // MANAGE_MESSAGES
+          (1n << 11n) | // SEND_MESSAGES
+          (1n << 16n) | // READ_MESSAGE_HISTORY
+          (1n << 20n) | // CONNECT
+          (1n << 21n) | // SPEAK
+          (1n << 22n);  // MUTE_MEMBERS
+      } else if (preset === 'member') {
+        state.tempRoleBitfield =
+          (1n << 10n) | // VIEW_CHANNEL
+          (1n << 11n) | // SEND_MESSAGES
+          (1n << 16n) | // READ_MESSAGE_HISTORY
+          (1n << 20n) | // CONNECT
+          (1n << 21n);  // SPEAK
+      } else {
+        state.tempRoleBitfield = 0n;
       }
+      renderRolePowersList();
+    }
+
+    function toggleRoleBit(bit) {
+      if ((state.tempRoleBitfield & bit) === bit) {
+        state.tempRoleBitfield &= ~bit;
+      } else {
+        state.tempRoleBitfield |= bit;
+      }
+      renderRolePowersList();
+    }
+
+    function renderRolePowersList() {
+      const container = document.getElementById('rolePowersList');
       container.innerHTML = '';
-      state.queue.forEach(item => {
-        const isDel = item.type.includes('DELETE');
-        const isMove = item.type === 'REORDER_CHANNELS';
-        const div = document.createElement('div');
-        div.className = `queue-node ${isDel ? 'del' : ''} ${isMove ? 'move' : ''}`;
-        div.innerHTML = `
+      ROLE_POWERS.forEach(p => {
+        const active = (state.tempRoleBitfield & p.bit) === p.bit;
+        const row = document.createElement('div');
+        row.className = 'perm-row';
+        row.innerHTML = `
           <div>
-            <span class="queue-op">${item.type}</span>
-            <span>${item.label}</span>
+            <div class="perm-name">${p.name}</div>
+            <div class="perm-desc">${p.desc}</div>
           </div>
-          <button class="hud-btn" style="padding: 2px 6px;" onclick="removeQueueItem('${item.id}')">✕</button>
+          <button class="bool-switch ${active ? 'enabled' : ''}" onclick="toggleRoleBit(${p.bit}n)">
+            ${active ? 'ENABLED' : 'OFF'}
+          </button>
         `;
-        container.appendChild(div);
+        container.appendChild(row);
       });
     }
 
-    /* Permissions Modal */
+    function stageRolePowers() {
+      const role = state.roles.find(r => r.id === state.editingRoleId);
+      if (!role) return;
+      role.permissions = state.tempRoleBitfield.toString();
+
+      state.queue.push({
+        id: uid(),
+        type: 'EDIT_ROLE',
+        target_id: role.id,
+        label: `Updated powers for @${role.name}`,
+        data: { permissions: role.permissions }
+      });
+      renderQueue();
+      closeAllModals();
+    }
+
+    /* CHANNEL TOPIC / SLOWMODE / NSFW MODAL */
+    function openMetaModal(channelId) {
+      const ch = state.channels.find(c => c.id === channelId);
+      if (!ch) return;
+      state.editingChannelId = channelId;
+      document.getElementById('metaModalTitle').innerText = `Settings: #${ch.name}`;
+      document.getElementById('metaTopicInput').value = ch.topic || '';
+      document.getElementById('metaSlowmodeSelect').value = String(ch.rate_limit_per_user || 0);
+      state.tempNsfw = Boolean(ch.nsfw);
+      updateNsfwButton();
+      document.getElementById('channelMetaModal').classList.remove('hidden');
+    }
+
+    function toggleNsfwState() {
+      state.tempNsfw = !state.tempNsfw;
+      updateNsfwButton();
+    }
+
+    function updateNsfwButton() {
+      const btn = document.getElementById('metaNsfwBtn');
+      btn.innerText = state.tempNsfw ? 'ENABLED' : 'OFF';
+      btn.classList.toggle('enabled', state.tempNsfw);
+    }
+
+    function stageChannelMeta() {
+      const ch = state.channels.find(c => c.id === state.editingChannelId);
+      if (!ch) return;
+      const topic = document.getElementById('metaTopicInput').value.trim();
+      const slowmode = parseInt(document.getElementById('metaSlowmodeSelect').value);
+
+      ch.topic = topic;
+      ch.rate_limit_per_user = slowmode;
+      ch.nsfw = state.tempNsfw;
+
+      state.queue.push({
+        id: uid(),
+        type: 'EDIT_CHANNEL_META',
+        target_id: ch.id,
+        label: `Topic/Settings #${ch.name}`,
+        data: { topic, rate_limit_per_user: slowmode, nsfw: state.tempNsfw }
+      });
+      renderAll();
+      closeAllModals();
+    }
+
+    /* CHANNEL PERMISSIONS MODAL */
     function openPermModal(channelId) {
       const ch = state.channels.find(c => c.id === channelId);
       if (!ch) return;
@@ -1242,9 +1678,12 @@
       document.getElementById('permModal').classList.remove('hidden');
     }
 
-    function closePermModal() {
+    function closeAllModals() {
       document.getElementById('permModal').classList.add('hidden');
+      document.getElementById('channelMetaModal').classList.add('hidden');
+      document.getElementById('rolePowersModal').classList.add('hidden');
       state.editingChannelId = null;
+      state.editingRoleId = null;
     }
 
     function loadRoleOverwritesIntoModal() {
@@ -1255,7 +1694,7 @@
       const denyBits = existing ? BigInt(existing.deny) : 0n;
 
       state.tempPermStates = {};
-      PERMISSIONS.forEach(p => {
+      CHANNEL_PERMS.forEach(p => {
         if ((allowBits & p.bit) === p.bit) state.tempPermStates[p.key] = 'allow';
         else if ((denyBits & p.bit) === p.bit) state.tempPermStates[p.key] = 'deny';
         else state.tempPermStates[p.key] = 'neutral';
@@ -1271,7 +1710,7 @@
     function renderPermRows() {
       const container = document.getElementById('permListContainer');
       container.innerHTML = '';
-      PERMISSIONS.forEach(p => {
+      CHANNEL_PERMS.forEach(p => {
         const current = state.tempPermStates[p.key] || 'neutral';
         const row = document.createElement('div');
         row.className = 'perm-row';
@@ -1298,7 +1737,7 @@
 
       let allow = 0n;
       let deny = 0n;
-      PERMISSIONS.forEach(p => {
+      CHANNEL_PERMS.forEach(p => {
         if (state.tempPermStates[p.key] === 'allow') allow |= p.bit;
         if (state.tempPermStates[p.key] === 'deny') deny |= p.bit;
       });
@@ -1317,10 +1756,86 @@
         data: { overwrite_id: roleId, overwrite_type: 0, allow: allow.toString(), deny: deny.toString() }
       });
       renderQueue();
-      closePermModal();
+      closeAllModals();
     }
 
-    /* Staging Actions */
+    /* JSON BLUEPRINTS (SEPARATE TAB) */
+    function exportBlueprint() {
+      const blueprint = {
+        exported_by: "Server Planner V1 - Becquerel development",
+        channels: state.channels.map(c => ({ name: c.name, type: c.type, topic: c.topic || "" })),
+        roles: state.roles.filter(r => !r.managed).map(r => ({
+          name: r.name,
+          color: '#' + (r.color || 0).toString(16).padStart(6, '0'),
+          permissions: r.permissions || "0"
+        }))
+      };
+      const jsonStr = JSON.stringify(blueprint, null, 2);
+      document.getElementById('blueprintInput').value = jsonStr;
+      navigator.clipboard?.writeText(jsonStr);
+      setStatus("BLUEPRINT COPIED");
+    }
+
+    function importBlueprint() {
+      try {
+        const raw = document.getElementById('blueprintInput').value.trim();
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+
+        (parsed.roles || []).forEach(r => {
+          state.queue.push({
+            id: uid(),
+            type: 'CREATE_ROLE',
+            label: `[JSON] @${r.name}`,
+            data: { name: r.name, color: r.color || "#38bdf8", permissions: r.permissions || "0" }
+          });
+        });
+
+        (parsed.channels || []).forEach(c => {
+          state.queue.push({
+            id: uid(),
+            type: 'CREATE_CHANNEL',
+            label: `[JSON] ${c.name}`,
+            data: { name: c.name, channel_type: c.type || 0, topic: c.topic || "" }
+          });
+        });
+
+        renderQueue();
+        switchTab('channels');
+        setStatus("BLUEPRINT STAGED");
+      } catch (e) {
+        alert("Invalid JSON format: " + e.message);
+      }
+    }
+
+    /* QUEUE & CRUD STAGING */
+    function renderQueue() {
+      const container = document.getElementById('queueList');
+      const count = state.queue.length;
+      document.getElementById('queueCount').innerText = count;
+      document.getElementById('queueBadge').innerText = count;
+
+      if (count === 0) {
+        container.innerHTML = '<div class="empty-state">No staged mutations.<br/>Edits buffer here at 0ms latency.</div>';
+        return;
+      }
+      container.innerHTML = '';
+      state.queue.forEach(item => {
+        const isDel = item.type.includes('DELETE');
+        const isMove = item.type.includes('REORDER');
+        const div = document.createElement('div');
+        div.className = `queue-node ${isDel ? 'del' : ''} ${isMove ? 'move' : ''}`;
+        div.innerHTML = `
+          <div>
+            <span class="queue-op">${item.type}</span>
+            <span>${item.label}</span>
+          </div>
+          <button class="hud-btn" style="padding: 2px 6px;" onclick="removeQueueItem('${item.id}')">✕</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
     function stageCreateChannel() {
       const nameInput = document.getElementById('newChannelName');
       const name = nameInput.value.trim();
@@ -1374,7 +1889,7 @@
       if (!name) return;
 
       const tempId = 'temp_' + uid();
-      const roleObj = { id: tempId, name, color: parseInt(color.slice(1), 16) };
+      const roleObj = { id: tempId, name, color: parseInt(color.slice(1), 16), managed: false };
       state.roles.unshift(roleObj);
       state.allRoles.unshift(roleObj);
       state.queue.push({ id: uid(), type: 'CREATE_ROLE', label: name, data: { name, color } });
