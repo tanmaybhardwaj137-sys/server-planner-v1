@@ -85,7 +85,7 @@
       z-index: 0;
     }
 
-    /* Spacious Header */
+    /* Header */
     header {
       position: relative;
       z-index: 2;
@@ -99,11 +99,7 @@
       backdrop-filter: blur(18px);
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
+    .brand { display: flex; align-items: center; gap: 14px; }
 
     .prism-mark {
       width: 0;
@@ -120,17 +116,24 @@
     .brand-divider { color: var(--text-muted); font-size: 14px; }
     .brand-sub { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--text-secondary); }
 
-    .header-actions {
-      display: flex;
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+
+    .remember-label {
+      display: inline-flex;
       align-items: center;
-      gap: 12px;
+      gap: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0 4px;
     }
 
     .hud-input {
       background: var(--bg-elevated);
       border: 1px solid var(--border);
       color: var(--text-primary);
-      padding: 9px 15px;
+      padding: 9px 14px;
       border-radius: 10px;
       font-family: 'JetBrains Mono', monospace;
       font-size: 12px;
@@ -182,7 +185,7 @@
     .icon-btn.spinning { animation: spin 0.6s linear infinite; }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-    /* Spacious Main Shell */
+    /* Shell */
     .shell {
       position: relative;
       z-index: 1;
@@ -215,9 +218,9 @@
 
     .glass-panel:hover::after { opacity: 1; }
 
-    /* Spacious Left Sidebar */
+    /* Sidebar */
     .sidebar {
-      width: 272px;
+      width: 274px;
       padding: 20px;
       display: flex;
       flex-direction: column;
@@ -239,7 +242,7 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
-      margin-bottom: 24px;
+      margin-bottom: 22px;
     }
 
     .nav-pill {
@@ -259,36 +262,8 @@
       transition: all 0.18s ease;
     }
 
-    .nav-pill:hover {
-      background: var(--bg-elevated);
-      color: var(--text-primary);
-    }
-
-    .nav-pill.active {
-      background: var(--btn-contrast-bg);
-      color: var(--btn-contrast-fg);
-      font-weight: 600;
-    }
-
-    .telemetry-box {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 16px;
-      margin-bottom: 18px;
-    }
-
-    .telemetry-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11.5px;
-      color: var(--text-secondary);
-      padding: 5px 0;
-    }
-
-    .telemetry-val { color: var(--text-primary); font-weight: 600; }
+    .nav-pill:hover { background: var(--bg-elevated); color: var(--text-primary); }
+    .nav-pill.active { background: var(--btn-contrast-bg); color: var(--btn-contrast-fg); font-weight: 600; }
 
     .shortcut-hints {
       background: var(--bg-elevated);
@@ -313,10 +288,35 @@
     .brand-footer-card {
       border-top: 1px solid var(--border);
       padding-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
     .brand-footer-title { font-size: 13.5px; font-weight: 600; color: var(--text-primary); }
-    .brand-footer-desc { font-size: 11.5px; color: var(--text-secondary); margin-top: 4px; line-height: 1.45; }
+    .brand-footer-desc { font-size: 11.5px; color: var(--text-secondary); margin-top: 3px; line-height: 1.45; }
+
+    .btn-admin {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 9px;
+      border: 1px solid var(--border-bright);
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.18s ease;
+    }
+
+    .btn-admin:hover {
+      border-color: var(--accent-beam);
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.16);
+    }
 
     /* Center Stage */
     .stage {
@@ -370,17 +370,13 @@
     }
 
     .list-surface::-webkit-scrollbar { width: 6px; }
-    .list-surface::-webkit-scrollbar-thumb {
-      background: var(--border-bright);
-      border-radius: 99px;
-    }
+    .list-surface::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 99px; }
 
     @keyframes nodeAppear {
       from { opacity: 0; transform: translateY(5px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Breathable Item Rows */
     .item-row {
       position: relative;
       display: flex;
@@ -390,7 +386,7 @@
       background: var(--bg-elevated);
       border: 1px solid var(--border);
       border-radius: 12px;
-      gap: 12px;
+      gap: 10px;
       transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
                   border-color 0.18s ease,
                   box-shadow 0.18s ease,
@@ -398,11 +394,7 @@
       animation: nodeAppear 0.2s ease forwards;
     }
 
-    .item-row:hover {
-      border-color: var(--border-bright);
-      background: var(--bg-hover);
-    }
-
+    .item-row:hover { border-color: var(--border-bright); background: var(--bg-hover); }
     .item-row.in-category { margin-left: 28px; }
     .item-row.category {
       background: transparent;
@@ -477,15 +469,12 @@
       transition: all 0.15s;
     }
 
-    .inline-input:focus {
-      background: var(--bg-void);
-      border-color: var(--border-bright);
-    }
+    .inline-input:focus { background: var(--bg-void); border-color: var(--border-bright); }
 
     .topic-pill {
       font-size: 11.5px;
       color: var(--text-muted);
-      max-width: 170px;
+      max-width: 150px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -508,30 +497,17 @@
       color: var(--text-secondary);
       font-family: 'JetBrains Mono', monospace;
       font-size: 11.5px;
-      padding: 5px 11px;
+      padding: 5px 10px;
       border-radius: 7px;
       cursor: pointer;
       transition: all 0.15s;
       white-space: nowrap;
     }
 
-    .hud-btn:hover {
-      color: var(--text-primary);
-      border-color: var(--border-bright);
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    .hud-btn.accent:hover {
-      color: var(--accent-beam);
-      border-color: rgba(56, 189, 248, 0.45);
-      background: rgba(56, 189, 248, 0.1);
-    }
-
-    .hud-btn.danger:hover {
-      color: var(--danger);
-      border-color: rgba(239, 68, 68, 0.45);
-      background: rgba(239, 68, 68, 0.1);
-    }
+    .hud-btn:hover { color: var(--text-primary); border-color: var(--border-bright); background: rgba(255, 255, 255, 0.05); }
+    .hud-btn.add-cat:hover { color: var(--drop-green); border-color: rgba(34, 197, 94, 0.5); background: rgba(34, 197, 94, 0.12); font-weight: 600; }
+    .hud-btn.accent:hover { color: var(--accent-beam); border-color: rgba(56, 189, 248, 0.45); background: rgba(56, 189, 248, 0.1); }
+    .hud-btn.danger:hover { color: var(--danger); border-color: rgba(239, 68, 68, 0.45); background: rgba(239, 68, 68, 0.1); }
 
     /* Command Composer Bar */
     .command-bar {
@@ -567,13 +543,7 @@
       padding: 5px 8px;
     }
 
-    .command-bar input[type="color"] {
-      width: 32px;
-      height: 32px;
-      border: none;
-      background: transparent;
-      cursor: pointer;
-    }
+    .command-bar input[type="color"] { width: 32px; height: 32px; border: none; background: transparent; cursor: pointer; }
 
     /* Emoji Grid */
     .emoji-grid {
@@ -593,23 +563,10 @@
       gap: 10px;
     }
 
-    .emoji-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      overflow: hidden;
-    }
+    .emoji-info { display: flex; align-items: center; gap: 10px; overflow: hidden; }
+    .emoji-img { width: 32px; height: 32px; object-fit: contain; border-radius: 6px; background: var(--bg-void); padding: 3px; }
 
-    .emoji-img {
-      width: 32px;
-      height: 32px;
-      object-fit: contain;
-      border-radius: 6px;
-      background: var(--bg-void);
-      padding: 3px;
-    }
-
-    /* Live Discord Preview Mockup */
+    /* Live Discord Preview */
     .discord-preview-shell {
       display: grid;
       grid-template-columns: 270px 1fr;
@@ -635,110 +592,24 @@
       margin-bottom: 12px;
     }
 
-    .dc-cat {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: #949ba4;
-      letter-spacing: 0.5px;
-      padding: 12px 8px 4px 8px;
-    }
-
-    .dc-chan {
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 13.5px;
-      color: #949ba4;
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      margin: 2px 0;
-    }
-
+    .dc-cat { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #949ba4; letter-spacing: 0.5px; padding: 12px 8px 4px 8px; }
+    .dc-chan { padding: 6px 10px; border-radius: 6px; font-size: 13.5px; color: #949ba4; display: flex; align-items: center; gap: 7px; margin: 2px 0; }
     .dc-chan:hover { background: #35373c; color: #f2f3f5; }
 
-    .discord-roles-mock {
-      background: #2b2d31;
-      color: #dbdee1;
-      border-radius: 14px;
-      padding: 20px;
-      overflow-y: auto;
-      border: 1px solid var(--border);
-    }
+    .discord-roles-mock { background: #2b2d31; color: #dbdee1; border-radius: 14px; padding: 20px; overflow-y: auto; border: 1px solid var(--border); }
+    .dc-role-pill { display: inline-flex; align-items: center; gap: 7px; background: #1e1f22; padding: 6px 12px; border-radius: 999px; font-size: 12.5px; margin: 4px; border: 1px solid rgba(255,255,255,0.07); }
 
-    .dc-role-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      background: #1e1f22;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 12.5px;
-      margin: 4px;
-      border: 1px solid rgba(255,255,255,0.07);
-    }
-
-    /* Blueprints View */
-    .blueprint-box {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-
-    .blueprint-card {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 20px;
-    }
-
+    /* Blueprints */
+    .blueprint-box { display: flex; flex-direction: column; gap: 18px; }
+    .blueprint-card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
     .blueprint-card h3 { font-size: 15.5px; font-weight: 600; margin-bottom: 6px; }
     .blueprint-card p { font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.5; }
+    .json-area { width: 100%; height: 170px; background: var(--bg-void); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-family: 'JetBrains Mono', monospace; font-size: 12px; padding: 14px; resize: none; outline: none; margin-bottom: 12px; user-select: text; }
 
-    .json-area {
-      width: 100%;
-      height: 170px;
-      background: var(--bg-void);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--text-primary);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      padding: 14px;
-      resize: none;
-      outline: none;
-      margin-bottom: 12px;
-      user-select: text;
-    }
-
-    /* Spacious Right Inspector HUD + Live Progress Bar */
-    .inspector-hud {
-      width: 340px;
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-    }
-
-    .hud-bar {
-      padding: 14px 18px;
-      background: rgba(0, 0, 0, 0.25);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11.5px;
-      color: var(--text-primary);
-    }
-
-    .hud-body {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+    /* Right Inspector HUD */
+    .inspector-hud { width: 340px; display: flex; flex-direction: column; flex-shrink: 0; }
+    .hud-bar { padding: 14px 18px; background: rgba(0, 0, 0, 0.25); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--text-primary); }
+    .hud-body { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
 
     .queue-node {
       padding: 11px 14px;
@@ -756,69 +627,22 @@
 
     .queue-node.del { border-left-color: var(--danger); }
     .queue-node.move { border-left-color: var(--drop-green); }
+    .queue-op { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted); display: block; margin-bottom: 3px; }
 
-    .queue-op {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      color: var(--text-muted);
-      display: block;
-      margin-bottom: 3px;
-    }
+    .hud-footer { padding: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
 
-    .hud-footer {
-      padding: 16px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+    .progress-wrap { display: flex; flex-direction: column; gap: 6px; }
+    .progress-label { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-secondary); }
+    .progress-track { width: 100%; height: 7px; background: var(--bg-void); border: 1px solid var(--border); border-radius: 999px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-beam), var(--drop-green)); border-radius: 999px; transition: width 0.25s ease; }
 
-    /* Live Progress Bar */
-    .progress-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .progress-label {
-      display: flex;
-      justify-content: space-between;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--text-secondary);
-    }
-
-    .progress-track {
-      width: 100%;
-      height: 7px;
-      background: var(--bg-void);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--accent-beam), var(--drop-green));
-      border-radius: 999px;
-      transition: width 0.25s ease;
-    }
-
-    .empty-state {
-      text-align: center;
-      color: var(--text-muted);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      margin-top: 64px;
-      line-height: 1.7;
-    }
+    .empty-state { text-align: center; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-top: 64px; line-height: 1.7; }
 
     /* Modals */
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(4, 5, 7, 0.8);
+      background: rgba(4, 5, 7, 0.82);
       backdrop-filter: blur(10px);
       display: flex;
       align-items: center;
@@ -828,7 +652,7 @@
 
     .modal-card {
       width: 570px;
-      max-height: 84vh;
+      max-height: 85vh;
       background: var(--bg-panel);
       border: 1px solid var(--border-bright);
       border-radius: 16px;
@@ -838,151 +662,43 @@
       box-shadow: 0 24px 64px rgba(0, 0, 0, 0.72);
     }
 
-    .modal-head {
-      padding: 18px 22px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
+    .modal-head { padding: 18px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
     .modal-head h3 { font-size: 16.5px; font-weight: 600; }
 
-    .modal-sub-bar {
-      padding: 14px 22px;
-      background: var(--bg-elevated);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+    .modal-sub-bar { padding: 14px 22px; background: var(--bg-elevated); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+    .modal-sub-bar select { flex: 1; background: var(--bg-void); border: 1px solid var(--border); color: var(--text-primary); padding: 8px 12px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 12px; outline: none; }
 
-    .modal-sub-bar select {
-      flex: 1;
-      background: var(--bg-void);
-      border: 1px solid var(--border);
-      color: var(--text-primary);
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      outline: none;
-    }
+    .preset-pill { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border-bright); background: var(--bg-void); color: var(--text-primary); font-family: 'JetBrains Mono', monospace; font-size: 11px; cursor: pointer; transition: all 0.15s; }
+    .preset-pill:hover { background: var(--btn-contrast-bg); color: var(--btn-contrast-fg); }
 
-    .preset-pill {
-      padding: 6px 12px;
-      border-radius: 999px;
-      border: 1px solid var(--border-bright);
-      background: var(--bg-void);
-      color: var(--text-primary);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    .preset-pill:hover {
-      background: var(--btn-contrast-bg);
-      color: var(--btn-contrast-fg);
-    }
-
-    .perm-list {
-      padding: 16px 22px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .perm-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 11px 14px;
-      background: var(--bg-elevated);
-      border-radius: 10px;
-      border: 1px solid var(--border);
-    }
-
+    .perm-list { padding: 16px 22px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+    .perm-row { display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; background: var(--bg-elevated); border-radius: 10px; border: 1px solid var(--border); }
     .perm-name { font-size: 13px; font-weight: 500; }
     .perm-desc { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
 
-    .tri-toggle {
-      display: flex;
-      background: var(--bg-void);
-      border: 1px solid var(--border);
-      border-radius: 7px;
-      overflow: hidden;
-    }
-
-    .tri-btn {
-      padding: 5px 10px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11.5px;
-      border: none;
-      background: transparent;
-      color: var(--text-secondary);
-      cursor: pointer;
-    }
-
+    .tri-toggle { display: flex; background: var(--bg-void); border: 1px solid var(--border); border-radius: 7px; overflow: hidden; }
+    .tri-btn { padding: 5px 10px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; }
     .tri-btn.deny.active { background: rgba(239, 68, 68, 0.25); color: var(--danger); font-weight: 600; }
     .tri-btn.neutral.active { background: var(--bg-hover); color: var(--text-primary); }
     .tri-btn.allow.active { background: rgba(34, 197, 94, 0.22); color: var(--drop-green); font-weight: 600; }
 
-    .bool-switch {
-      padding: 6px 14px;
-      border-radius: 7px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      border: 1px solid var(--border);
-      background: var(--bg-void);
-      color: var(--text-secondary);
-      cursor: pointer;
-      min-width: 82px;
-      text-align: center;
-    }
+    .bool-switch { padding: 6px 14px; border-radius: 7px; font-family: 'JetBrains Mono', monospace; font-size: 11px; border: 1px solid var(--border); background: var(--bg-void); color: var(--text-secondary); cursor: pointer; min-width: 82px; text-align: center; }
+    .bool-switch.enabled { background: rgba(34, 197, 94, 0.2); border-color: rgba(34, 197, 94, 0.5); color: var(--drop-green); font-weight: 600; }
 
-    .bool-switch.enabled {
-      background: rgba(34, 197, 94, 0.2);
-      border-color: rgba(34, 197, 94, 0.5);
-      color: var(--drop-green);
-      font-weight: 600;
-    }
+    .field-group { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
+    .field-group label { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-secondary); }
+    .field-group input, .field-group select, .field-group textarea { background: var(--bg-void); border: 1px solid var(--border-bright); color: var(--text-primary); padding: 9px 13px; border-radius: 9px; font-size: 13px; outline: none; user-select: text; }
 
-    .field-group {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-      margin-bottom: 14px;
-    }
+    .modal-foot { padding: 14px 22px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 
-    .field-group label {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--text-secondary);
-    }
-
-    .field-group input, .field-group select, .field-group textarea {
-      background: var(--bg-void);
-      border: 1px solid var(--border-bright);
-      color: var(--text-primary);
-      padding: 9px 13px;
-      border-radius: 9px;
-      font-size: 13px;
-      outline: none;
-      user-select: text;
-    }
-
-    .modal-foot {
-      padding: 14px 22px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-    }
+    /* Admin Dashboard Table inside Modal */
+    .admin-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+    .admin-stat-box { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+    .admin-stat-num { font-size: 22px; font-weight: 600; color: var(--accent-beam); }
+    .admin-stat-lbl { font-size: 11px; color: var(--text-secondary); margin-top: 3px; }
+    .admin-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .admin-table th, .admin-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    .admin-table th { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--text-muted); text-transform: uppercase; }
 
     .hidden { display: none !important; }
   </style>
@@ -998,8 +714,12 @@
     </div>
 
     <div class="header-actions">
-      <input type="password" id="botToken" class="hud-input" placeholder="BOT_TOKEN" style="width: 210px;" />
-      <input type="text" id="guildId" class="hud-input" placeholder="GUILD_ID" style="width: 175px;" />
+      <label class="remember-label" title="Save token & server ID locally in your browser">
+        <input type="checkbox" id="rememberCreds" onchange="handleRememberToggle()" />
+        <span>Remember</span>
+      </label>
+      <input type="password" id="botToken" class="hud-input" placeholder="BOT_TOKEN" style="width: 200px;" />
+      <input type="text" id="guildId" class="hud-input" placeholder="GUILD_ID" style="width: 165px;" />
       <button class="btn-contrast" onclick="loadServer()">Connect →</button>
       <button class="icon-btn" id="refreshBtn" title="Refresh Server State (Alt+R)" onclick="loadServer(true)">↻</button>
       <button class="icon-btn" title="Toggle Obsidian / Alabaster Theme" onclick="toggleTheme()">◐</button>
@@ -1007,7 +727,7 @@
   </header>
 
   <div class="shell">
-    <!-- Left Navigation & Telemetry -->
+    <!-- Left Sidebar -->
     <aside class="glass-panel sidebar">
       <div>
         <div class="nav-group-title">Workspace</div>
@@ -1042,10 +762,16 @@
       </div>
 
       <div class="brand-footer-card">
-        <div class="brand-footer-title">Becquerel development</div>
-        <div class="brand-footer-desc">
-          Zero-latency Discord architecture studio. Drag nodes to reorder hierarchy & categories.
+        <div>
+          <div class="brand-footer-title">Becquerel development</div>
+          <div class="brand-footer-desc">
+            Zero-latency Discord architecture studio. Drag nodes to reorder hierarchy & categories.
+          </div>
         </div>
+        <button class="btn-admin" onclick="openAdminModal()">
+          <span>Admin</span>
+          <span>→</span>
+        </button>
       </div>
     </aside>
 
@@ -1054,7 +780,7 @@
       <div class="stage-header">
         <div>
           <h1 class="stage-title" id="viewHeading">Channels & Categories</h1>
-          <p class="stage-sub" id="viewSubheading">Hold & drag any channel across categories, sync category permissions, or edit channel topics.</p>
+          <p class="stage-sub" id="viewSubheading">Click + on any category to create a channel inside it, drag nodes to reorder, or set @everyone & role permissions.</p>
         </div>
         <div class="status-chip">
           <span class="pulse-node"></span>
@@ -1100,6 +826,8 @@
         <select id="newChannelType" onchange="toggleCategorySelect()">
           <option value="0"># TEXT</option>
           <option value="2">🔊 VOICE</option>
+          <option value="5">📢 ANNOUNCEMENT</option>
+          <option value="13">🎭 STAGE</option>
           <option value="4">📁 CATEGORY</option>
         </select>
         <select id="newChannelCategory">
@@ -1127,7 +855,7 @@
       </div>
     </main>
 
-    <!-- Right Action Queue Inspector + Live Progress Bar -->
+    <!-- Right Action Queue Inspector -->
     <aside class="glass-panel inspector-hud">
       <div class="hud-bar">
         <span>▾ Action Queue (<span id="queueCount">0</span>)</span>
@@ -1156,7 +884,36 @@
     </aside>
   </div>
 
-  <!-- MODAL 1: Channel & Category Permission Overwrites -->
+  <!-- MODAL: Quick Create Channel Inside Category (+ Button on Category) -->
+  <div class="modal-backdrop hidden" id="catQuickCreateModal">
+    <div class="modal-card" style="width: 440px;">
+      <div class="modal-head">
+        <h3 id="catQuickTitle">Create Channel in Category</h3>
+        <button class="hud-btn" onclick="closeAllModals()">ESC</button>
+      </div>
+      <div style="padding: 20px;">
+        <div class="field-group">
+          <label>CHANNEL TYPE</label>
+          <select id="catQuickType">
+            <option value="0"># Text Channel (Default)</option>
+            <option value="2">🔊 Voice Channel</option>
+            <option value="5">📢 Announcement Channel</option>
+            <option value="13">🎭 Stage Channel</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>CHANNEL NAME</label>
+          <input type="text" id="catQuickName" placeholder="e.g. general-chat" onkeydown="if(event.key==='Enter') confirmCatQuickCreate()" />
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="hud-btn" onclick="closeAllModals()">Cancel</button>
+        <button class="btn-contrast" onclick="confirmCatQuickCreate()">+ Stage Channel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Channel & Category Permission Overwrites (Defaults to @everyone) -->
   <div class="modal-backdrop hidden" id="permModal">
     <div class="modal-card">
       <div class="modal-head">
@@ -1175,7 +932,7 @@
     </div>
   </div>
 
-  <!-- MODAL 2: Channel Topic, Slowmode & NSFW Settings -->
+  <!-- MODAL: Channel Topic, Slowmode & NSFW Settings -->
   <div class="modal-backdrop hidden" id="channelMetaModal">
     <div class="modal-card" style="width: 480px;">
       <div class="modal-head">
@@ -1215,7 +972,7 @@
     </div>
   </div>
 
-  <!-- MODAL 3: Role Powers, Quick Presets & Sync to All Channels -->
+  <!-- MODAL: Role Powers, Quick Presets & Sync to All Channels -->
   <div class="modal-backdrop hidden" id="rolePowersModal">
     <div class="modal-card">
       <div class="modal-head">
@@ -1231,7 +988,7 @@
       </div>
       <div class="perm-list" id="rolePowersList"></div>
       <div class="modal-foot">
-        <button class="hud-btn accent" title="Apply this role's View/Send/Connect permissions to all channels" onclick="stageSyncRoleToChannels()">Sync Role to All Channels</button>
+        <button class="hud-btn accent" onclick="stageSyncRoleToChannels()">Sync Role to All Channels</button>
         <div style="display:flex; gap:8px;">
           <button class="hud-btn" onclick="closeAllModals()">Cancel</button>
           <button class="btn-contrast" onclick="stageRolePowers()">Stage Powers</button>
@@ -1240,7 +997,98 @@
     </div>
   </div>
 
+  <!-- MODAL: Admin Login & Management Panel -->
+  <div class="modal-backdrop hidden" id="adminModal">
+    <div class="modal-card" style="width: 760px;">
+      <div class="modal-head">
+        <h3>Becquerel development — Admin Panel</h3>
+        <button class="hud-btn" onclick="closeAllModals()">ESC</button>
+      </div>
+
+      <!-- Login Step -->
+      <div id="adminLoginView" style="padding: 24px;">
+        <div class="field-group">
+          <label>ADMIN USERNAME</label>
+          <input type="text" id="adminUserInput" placeholder="Enter admin username..." />
+        </div>
+        <div class="field-group">
+          <label>ADMIN PASSWORD</label>
+          <input type="password" id="adminPassInput" placeholder="Enter admin password..." onkeydown="if(event.key==='Enter') loginAdmin()" />
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top: 16px;">
+          <button class="hud-btn" onclick="closeAllModals()">Cancel</button>
+          <button class="btn-contrast" onclick="loginAdmin()">Unlock Panel →</button>
+        </div>
+      </div>
+
+      <!-- Authenticated Dashboard Step -->
+      <div id="adminDashboardView" class="hidden" style="padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 18px;">
+        <div class="admin-stats-grid">
+          <div class="admin-stat-box"><div class="admin-stat-num" id="admUsers">0</div><div class="admin-stat-lbl">Unique Users</div></div>
+          <div class="admin-stat-box"><div class="admin-stat-num" id="admServers">0</div><div class="admin-stat-lbl">Servers Used</div></div>
+          <div class="admin-stat-box"><div class="admin-stat-num" id="admSyncs">0</div><div class="admin-stat-lbl">Batch Syncs</div></div>
+          <div class="admin-stat-box"><div class="admin-stat-num" style="color:var(--danger);" id="admBlocked">0</div><div class="admin-stat-lbl">Blacklisted</div></div>
+        </div>
+
+        <!-- Blacklist Control -->
+        <div style="background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; padding: 14px;">
+          <div class="mono" style="font-size: 11px; color: var(--text-secondary); margin-bottom: 10px;">BLACKLIST SERVER ID OR USER HASH</div>
+          <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+            <input type="text" id="blTargetInput" class="hud-input" placeholder="Server ID or User Hash..." style="flex:1;" />
+            <input type="text" id="blReasonInput" class="hud-input" placeholder="Reason (optional)..." style="flex:1;" />
+            <button class="btn-contrast" onclick="addBlacklist()">Block</button>
+          </div>
+          <div id="blacklistChips" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+        </div>
+
+        <!-- Usage Logs Table -->
+        <div style="background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;">
+          <div style="padding: 12px 14px; border-bottom: 1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+            <span class="mono" style="font-size: 11px; color: var(--text-secondary);">RECENT BOT USAGE LOGS</span>
+            <button class="hud-btn danger" onclick="deleteAdminLog(null)">Clear All Logs</button>
+          </div>
+          <div style="max-height: 240px; overflow-y: auto;">
+            <table class="admin-table">
+              <thead>
+                <tr><th>Time</th><th>Server</th><th>User Hash</th><th>Details</th><th>Action</th></tr>
+              </thead>
+              <tbody id="adminLogsTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
+    /* Load saved credentials from browser localStorage if Remember was checked */
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedToken = localStorage.getItem('sp_v1_token');
+      const savedGuild = localStorage.getItem('sp_v1_guild');
+      if (savedToken || savedGuild) {
+        document.getElementById('rememberCreds').checked = true;
+        if (savedToken) document.getElementById('botToken').value = savedToken;
+        if (savedGuild) document.getElementById('guildId').value = savedGuild;
+      }
+    });
+
+    function handleRememberToggle() {
+      const checked = document.getElementById('rememberCreds').checked;
+      if (!checked) {
+        localStorage.removeItem('sp_v1_token');
+        localStorage.removeItem('sp_v1_guild');
+      } else {
+        saveCredsIfEnabled();
+      }
+    }
+
+    function saveCredsIfEnabled() {
+      if (document.getElementById('rememberCreds').checked) {
+        localStorage.setItem('sp_v1_token', document.getElementById('botToken').value.trim());
+        localStorage.setItem('sp_v1_guild', document.getElementById('guildId').value.trim());
+      }
+    }
+
     document.addEventListener('mousemove', (e) => {
       document.querySelectorAll('.glass-panel').forEach(panel => {
         const rect = panel.getBoundingClientRect();
@@ -1250,9 +1098,8 @@
     });
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        closeAllModals();
-      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+      if (e.key === 'Escape') closeAllModals();
+      else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
         e.preventDefault();
         if (state.queue.length > 0) {
           state.queue.pop();
@@ -1318,12 +1165,14 @@
       queue: [],
       editingChannelId: null,
       editingRoleId: null,
+      quickTargetCatId: null,
       tempPermStates: {},
       tempRoleBitfield: 0n,
       tempNsfw: false,
       dragType: null,
       draggedId: null,
-      dropMode: null
+      dropMode: null,
+      adminCreds: null
     };
 
     function uid() { return Math.random().toString(36).substring(2, 9); }
@@ -1341,7 +1190,7 @@
       document.getElementById('emojiComposer').classList.toggle('hidden', tab !== 'emojis');
 
       const titles = {
-        channels: ['Channels & Categories', 'Hold & drag any channel across categories, sync category permissions, or edit channel topics.'],
+        channels: ['Channels & Categories', 'Click + on any category to create a channel inside it, drag nodes to reorder, or set @everyone & role permissions.'],
         roles: ['Roles & Hierarchy', 'Drag unlocked roles to reorder hierarchy, apply quick power presets, or sync role permissions.'],
         emojis: ['Custom Emojis', 'Upload new PNG/GIF custom emojis or remove unused ones in batch.'],
         preview: ['Live Discord Preview', 'Real-time visual preview of your channel sidebar and role hierarchy before syncing.'],
@@ -1363,6 +1212,7 @@
       const guild_id = document.getElementById('guildId').value.trim();
       if (!token || !guild_id) return alert("Enter both BOT_TOKEN and GUILD_ID.");
 
+      saveCredsIfEnabled();
       const refreshBtn = document.getElementById('refreshBtn');
       if (isRefresh) refreshBtn.classList.add('spinning');
       setStatus(isRefresh ? "REFRESHING..." : "FETCHING...");
@@ -1435,7 +1285,15 @@
       if (state.activeTab === 'preview') renderDiscordPreview();
     }
 
-    /* CHANNELS RENDER & DRAG */
+    function getChannelIcon(type) {
+      if (type === 4) return '📁';
+      if (type === 2) return '🔊';
+      if (type === 5) return '📢';
+      if (type === 13) return '🎭';
+      return '#';
+    }
+
+    /* CHANNELS RENDER & CATEGORY + BUTTON */
     function renderChannels() {
       const container = document.getElementById('channelsView');
       container.innerHTML = '';
@@ -1447,14 +1305,19 @@
       state.channels.forEach(ch => {
         const isCat = ch.type === 4;
         const inCat = !isCat && Boolean(ch.parent_id);
-        const prefix = isCat ? '📁' : (ch.type === 2 ? '🔊' : '#');
+        const prefix = getChannelIcon(ch.type);
         const isTemp = ch.id.startsWith('temp_');
         const topicBadge = (!isCat && ch.topic) ? `<span class="topic-pill" title="${ch.topic}">${ch.topic}</span>` : '';
+
+        const catAddBtn = isCat
+          ? `<button class="hud-btn add-cat" title="Add channel inside this category" onclick="openCatQuickCreate('${ch.id}')">+</button>`
+          : '';
 
         const actionBtns = !isTemp ? `
           ${isCat ? `<button class="hud-btn accent" title="Push this category's permissions to all channels inside it" onclick="stageSyncCategoryPerms('${ch.id}')">Sync Perms</button>` : ''}
           ${!isCat ? `<button class="hud-btn" onclick="openMetaModal('${ch.id}')">Topic</button>` : ''}
           <button class="hud-btn" onclick="openPermModal('${ch.id}')">Perms</button>
+          ${!isCat ? `<button class="hud-btn" title="Clone channel" onclick="stageCloneChannel('${ch.id}')">Clone</button>` : ''}
         ` : '';
 
         const row = document.createElement('div');
@@ -1503,11 +1366,82 @@
           <span class="mono" style="color: var(--text-muted); font-size: 13px;">${prefix}</span>
           <input class="inline-input" value="${ch.name}" onchange="stageRenameChannel('${ch.id}', this.value)" />
           ${topicBadge}
+          ${catAddBtn}
           ${actionBtns}
           <button class="hud-btn danger" onclick="stageDeleteChannel('${ch.id}', '${ch.name}')">Del</button>
         `;
         container.appendChild(row);
       });
+    }
+
+    /* Quick + Create Inside Category */
+    function openCatQuickCreate(catId) {
+      const cat = state.channels.find(c => c.id === catId);
+      if (!cat) return;
+      state.quickTargetCatId = catId;
+      document.getElementById('catQuickTitle').innerText = `New Channel in 📁 ${cat.name}`;
+      document.getElementById('catQuickType').value = "0"; // Default: Text Channel
+      document.getElementById('catQuickName').value = "";
+      document.getElementById('catQuickCreateModal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('catQuickName').focus(), 50);
+    }
+
+    function confirmCatQuickCreate() {
+      const cat = state.channels.find(c => c.id === state.quickTargetCatId);
+      const name = document.getElementById('catQuickName').value.trim();
+      const channel_type = parseInt(document.getElementById('catQuickType').value);
+      if (!cat || !name) return;
+
+      const parent_id = cat.id.startsWith('temp_') ? null : cat.id;
+      const tempId = 'temp_' + uid();
+      const newCh = { id: tempId, name, type: channel_type, parent_id: cat.id, permission_overwrites: [] };
+
+      const catIdx = state.channels.findIndex(c => c.id === cat.id);
+      if (catIdx >= 0) state.channels.splice(catIdx + 1, 0, newCh);
+      else state.channels.push(newCh);
+
+      state.queue.push({
+        id: uid(),
+        type: 'CREATE_CHANNEL',
+        label: `${name} (in 📁 ${cat.name})`,
+        data: { name, channel_type, parent_id }
+      });
+
+      closeAllModals();
+      renderAll();
+    }
+
+    function stageCloneChannel(channelId) {
+      const src = state.channels.find(c => c.id === channelId);
+      if (!src) return;
+      const cloneName = `${src.name}-copy`;
+      const tempId = 'temp_' + uid();
+      const cloned = {
+        id: tempId,
+        name: cloneName,
+        type: src.type,
+        parent_id: src.parent_id || null,
+        topic: src.topic || "",
+        permission_overwrites: JSON.parse(JSON.stringify(src.permission_overwrites || []))
+      };
+
+      const srcIdx = state.channels.findIndex(c => c.id === channelId);
+      state.channels.splice(srcIdx + 1, 0, cloned);
+
+      state.queue.push({
+        id: uid(),
+        type: 'CREATE_CHANNEL',
+        label: `Clone #${cloneName}`,
+        data: {
+          name: cloneName,
+          channel_type: src.type,
+          parent_id: src.parent_id || null,
+          topic: src.topic || "",
+          rate_limit_per_user: src.rate_limit_per_user || 0,
+          permission_overwrites: cloned.permission_overwrites
+        }
+      });
+      renderAll();
     }
 
     function stageSyncCategoryPerms(catId) {
@@ -1732,7 +1666,7 @@
       state.dropMode = null;
     }
 
-    /* CUSTOM EMOJIS RENDER & STAGING */
+    /* CUSTOM EMOJIS */
     function renderEmojis() {
       const container = document.getElementById('emojisView');
       if (state.emojis.length === 0) {
@@ -1797,7 +1731,7 @@
       renderAll();
     }
 
-    /* LIVE DISCORD PREVIEW RENDER */
+    /* LIVE DISCORD PREVIEW */
     function renderDiscordPreview() {
       const container = document.getElementById('previewView');
       const guildTitle = state.guildName || 'Discord Server Preview';
@@ -1807,8 +1741,7 @@
         if (ch.type === 4) {
           sidebarHtml += `<div class="dc-cat">▾ ${ch.name}</div>`;
         } else {
-          const icon = ch.type === 2 ? '🔊' : '#';
-          sidebarHtml += `<div class="dc-chan"><span>${icon}</span><span>${ch.name}</span></div>`;
+          sidebarHtml += `<div class="dc-chan"><span>${getChannelIcon(ch.type)}</span><span>${ch.name}</span></div>`;
         }
       });
 
@@ -1899,7 +1832,6 @@
       const role = state.roles.find(r => r.id === state.editingRoleId);
       if (!role) return;
 
-      // Extract channel-relevant allow bits from the role's current powers
       const channelRelevantMask = (1n << 10n) | (1n << 11n) | (1n << 16n) | (1n << 20n) | (1n << 21n) | (1n << 13n) | (1n << 4n);
       const allowBits = state.tempRoleBitfield & channelRelevantMask;
 
@@ -1962,7 +1894,7 @@
       closeAllModals();
     }
 
-    /* CHANNEL PERMISSIONS MODAL */
+    /* CHANNEL PERMISSIONS MODAL (DEFAULTS TO @everyone) */
     function openPermModal(channelId) {
       const ch = state.channels.find(c => c.id === channelId);
       if (!ch) return;
@@ -1971,13 +1903,25 @@
 
       const select = document.getElementById('permRoleSelect');
       select.innerHTML = '';
-      state.allRoles.forEach(role => {
+
+      // Sort roles so @everyone appears first and is selected by default
+      const sortedForPerm = [...state.allRoles].sort((a, b) => {
+        const aIsEveryone = (a.name === '@everyone' || a.id === state.guildId) ? -1 : 0;
+        const bIsEveryone = (b.name === '@everyone' || b.id === state.guildId) ? -1 : 0;
+        return aIsEveryone - bIsEveryone;
+      });
+
+      let everyoneId = null;
+      sortedForPerm.forEach(role => {
+        const isEveryone = (role.name === '@everyone' || role.id === state.guildId);
+        if (isEveryone) everyoneId = role.id;
         const opt = document.createElement('option');
         opt.value = role.id;
-        opt.innerText = role.name === '@everyone' ? '@everyone' : `@${role.name}`;
+        opt.innerText = isEveryone ? '@everyone (Default)' : `@${role.name}`;
         select.appendChild(opt);
       });
 
+      if (everyoneId) select.value = everyoneId;
       loadRoleOverwritesIntoModal();
       document.getElementById('permModal').classList.remove('hidden');
     }
@@ -1986,8 +1930,11 @@
       document.getElementById('permModal').classList.add('hidden');
       document.getElementById('channelMetaModal').classList.add('hidden');
       document.getElementById('rolePowersModal').classList.add('hidden');
+      document.getElementById('catQuickCreateModal').classList.add('hidden');
+      document.getElementById('adminModal').classList.add('hidden');
       state.editingChannelId = null;
       state.editingRoleId = null;
+      state.quickTargetCatId = null;
     }
 
     function loadRoleOverwritesIntoModal() {
@@ -2063,6 +2010,135 @@
       closeAllModals();
     }
 
+    /* ADMIN MODAL & MANAGEMENT */
+    function openAdminModal() {
+      document.getElementById('adminModal').classList.remove('hidden');
+      if (state.adminCreds) {
+        document.getElementById('adminLoginView').classList.add('hidden');
+        document.getElementById('adminDashboardView').classList.remove('hidden');
+        refreshAdminData();
+      } else {
+        document.getElementById('adminLoginView').classList.remove('hidden');
+        document.getElementById('adminDashboardView').classList.add('hidden');
+        setTimeout(() => document.getElementById('adminUserInput').focus(), 50);
+      }
+    }
+
+    async function loginAdmin() {
+      const username = document.getElementById('adminUserInput').value.trim();
+      const password = document.getElementById('adminPassInput').value;
+      if (!username || !password) return alert("Enter username and password.");
+
+      state.adminCreds = { username, password };
+      const ok = await refreshAdminData();
+      if (ok) {
+        document.getElementById('adminLoginView').classList.add('hidden');
+        document.getElementById('adminDashboardView').classList.remove('hidden');
+      } else {
+        state.adminCreds = null;
+      }
+    }
+
+    async function refreshAdminData() {
+      if (!state.adminCreds) return false;
+      try {
+        const res = await fetch('/api/admin/data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(state.adminCreds)
+        });
+        if (!res.ok) {
+          alert((await res.json()).detail || "Unauthorized");
+          return false;
+        }
+        const data = await res.json();
+        document.getElementById('admUsers').innerText = data.stats.unique_users;
+        document.getElementById('admServers').innerText = data.stats.unique_servers;
+        document.getElementById('admSyncs').innerText = data.stats.syncs;
+        document.getElementById('admBlocked').innerText = data.stats.blacklisted_count;
+
+        // Render blacklist chips
+        const blBox = document.getElementById('blacklistChips');
+        blBox.innerHTML = data.blacklist.length === 0
+          ? '<span class="mono" style="font-size:11px; color:var(--text-muted);">No blacklisted targets.</span>'
+          : '';
+        data.blacklist.forEach(b => {
+          const chip = document.createElement('span');
+          chip.className = 'lock-badge';
+          chip.style.display = 'inline-flex';
+          chip.style.alignItems = 'center';
+          chip.style.gap = '8px';
+          chip.innerHTML = `<span>🚫 ${b.target} (${b.reason})</span><span style="cursor:pointer; font-weight:bold;" onclick="removeBlacklist('${b.target}')">✕</span>`;
+          blBox.appendChild(chip);
+        });
+
+        // Render logs table
+        const tbody = document.getElementById('adminLogsTbody');
+        tbody.innerHTML = '';
+        data.logs.forEach(l => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="mono" style="font-size:11px;">${l.time}</td>
+            <td><strong>${l.guild_name}</strong><br/><span class="mono" style="font-size:10px; color:var(--text-muted);">${l.guild_id}</span></td>
+            <td class="mono">${l.user_hash}</td>
+            <td>${l.details}</td>
+            <td style="display:flex; gap:6px;">
+              <button class="hud-btn" title="Blacklist this user hash" onclick="quickBlacklist('${l.user_hash}')">Ban</button>
+              <button class="hud-btn danger" onclick="deleteAdminLog(${l.id})">Del</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+        return true;
+      } catch (e) {
+        alert("Admin fetch failed");
+        return false;
+      }
+    }
+
+    async function deleteAdminLog(logId) {
+      if (!state.adminCreds) return;
+      await fetch('/api/admin/delete-log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...state.adminCreds, log_id: logId })
+      });
+      refreshAdminData();
+    }
+
+    async function addBlacklist() {
+      if (!state.adminCreds) return;
+      const target_value = document.getElementById('blTargetInput').value.trim();
+      const reason = document.getElementById('blReasonInput').value.trim();
+      if (!target_value) return;
+
+      await fetch('/api/admin/blacklist/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...state.adminCreds, target_value, reason })
+      });
+      document.getElementById('blTargetInput').value = '';
+      document.getElementById('blReasonInput').value = '';
+      refreshAdminData();
+    }
+
+    function quickBlacklist(target) {
+      if (!target || target === '-') return;
+      document.getElementById('blTargetInput').value = target;
+      document.getElementById('blReasonInput').value = 'Blocked from admin logs';
+      addBlacklist();
+    }
+
+    async function removeBlacklist(target) {
+      if (!state.adminCreds) return;
+      await fetch('/api/admin/blacklist/remove', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...state.adminCreds, target_value: target })
+      });
+      refreshAdminData();
+    }
+
     /* JSON BLUEPRINTS */
     function exportBlueprint() {
       const blueprint = {
@@ -2112,7 +2188,7 @@
       }
     }
 
-    /* QUEUE & LIVE STEP-BY-STEP DEPLOYMENT WITH PROGRESS BAR */
+    /* QUEUE & DEPLOY */
     function renderQueue() {
       const container = document.getElementById('queueList');
       const count = state.queue.length;
