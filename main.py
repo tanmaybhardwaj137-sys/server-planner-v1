@@ -4,15 +4,17 @@ import hashlib
 import sqlite3
 from datetime import datetime, timezone
 import aiohttp
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 
 app = FastAPI(title="Server Planner V1")
 DISCORD_API = "https://discord.com/api/v10"
 DB_PATH = "analytics.db"
-ADMIN_KEY = os.environ.get("ADMIN_KEY", "becquerel2026")
+
+ADMIN_USER = os.environ.get("ADMIN_USER", "becquerel")
+ADMIN_PASS = os.environ.get("ADMIN_PASS", "becquerel@708090")
 
 
 def init_db():
@@ -21,9 +23,18 @@ def init_db():
         CREATE TABLE IF NOT EXISTS logs (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             event_type TEXT,
+            guild_id TEXT,
             guild_name TEXT,
             user_hash TEXT,
             details TEXT,
+            created_at TEXT
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS blacklist (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            target_value TEXT UNIQUE,
+            reason TEXT,
             created_at TEXT
         )
     """)
@@ -34,21 +45,58 @@ def init_db():
 init_db()
 
 
-def log_event(event_type: str, guild_name: str = "-", token: str = "", details: str = ""):
-    user_hash = hashlib.sha256(token.strip().encode()).hexdigest()[:10] if token else "-"
+def get_user_hash(token: str) -> str:
+    return hashlib.sha256(token.strip().encode()).hexdigest()[:12] if token else "-"
+
+
+def is_blacklisted(guild_id: str, user_hash: str) -> Optional[str]:
+    conn = sqlite3.connect(DB_PATH)
+    row = conn.execute(
+        "SELECT reason FROM blacklist WHERE target_value = ? OR target_value = ?",
+        (guild_id.strip(), user_hash)
+    ).fetchone()
+    conn.close()
+    return row[0] if row else None
+
+
+def log_event(event_type: str, guild_id: str = "-", guild_name: str = "-", token: str = "", details: str = ""):
+    user_hash = get_user_hash(token)
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     conn = sqlite3.connect(DB_PATH)
     conn.execute(
-        "INSERT INTO logs (event_type, guild_name, user_hash, details, created_at) VALUES (?, ?, ?, ?, ?)",
-        (event_type, guild_name, user_hash, details, now)
+        "INSERT INTO logs (event_type, guild_id, guild_name, user_hash, details, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+        (event_type, guild_id, guild_name, user_hash, details, now)
     )
     conn.commit()
     conn.close()
 
 
+def verify_admin(username: str, password: str):
+    if username.strip() != ADMIN_USER or password != ADMIN_PASS:
+        raise HTTPException(status_code=401, detail="Invalid admin username or password.")
+
+
 class AuthPayload(BaseModel):
     token: str
     guild_id: str
+
+
+class AdminAuthPayload(BaseModel):
+    username: str
+    password: str
+
+
+class AdminDeleteLogPayload(BaseModel):
+    username: str
+    password: str
+    log_id: Optional[int] = None  # None = clear all logs
+
+
+class AdminBlacklistPayload(BaseModel):
+    username: str
+    password: str
+    target_value: str
+    reason: str = "Blacklisted by admin"
 
 
 class ActionItem(BaseModel):
@@ -100,6 +148,11 @@ async def serve_ui():
 
 @app.post("/api/load")
 async def load_guild(payload: AuthPayload):
+    u_hash = get_user_hash(payload.token)
+    blocked_reason = is_blacklisted(payload.guild_id, u_hash)
+    if blocked_reason:
+        raise HTTPException(status_code=403, detail=f"Access denied: {blocked_reason}")
+
     headers = get_headers(payload.token)
     async with aiohttp.ClientSession() as session:
         guild = await discord_request(session, "GET", f"{DISCORD_API}/guilds/{payload.guild_id}", headers)
@@ -123,6 +176,7 @@ async def load_guild(payload: AuthPayload):
 
     log_event(
         "LOAD_SERVER",
+        guild_id=payload.guild_id,
         guild_name=guild.get("name", "Unknown"),
         token=payload.token,
         details=f"Loaded {len(channels)} channels, {len(roles)} roles"
@@ -139,7 +193,11 @@ async def load_guild(payload: AuthPayload):
 
 @app.post("/api/deploy-step")
 async def deploy_single_step(payload: SingleStepPayload):
-    """Executes one staged action at a time so the UI can drive a real-time progress bar."""
+    u_hash = get_user_hash(payload.token)
+    blocked_reason = is_blacklisted(payload.guild_id, u_hash)
+    if blocked_reason:
+        return {"status": "error", "detail": f"Access denied: {blocked_reason}"}
+
     headers = get_headers(payload.token)
     action = payload.action
     t = action.type
@@ -153,6 +211,10 @@ async def deploy_single_step(payload: SingleStepPayload):
                     body["parent_id"] = d["parent_id"]
                 if d.get("topic"):
                     body["topic"] = d["topic"]
+                if d.get("rate_limit_per_user"):
+                    body["rate_limit_per_user"] = int(d["rate_limit_per_user"])
+                if d.get("permission_overwrites"):
+                    body["permission_overwrites"] = d["permission_overwrites"]
                 await discord_request(session, "POST", f"{DISCORD_API}/guilds/{payload.guild_id}/channels", headers, body)
 
             elif t == "RENAME_CHANNEL":
@@ -225,6 +287,7 @@ async def deploy_single_step(payload: SingleStepPayload):
             if payload.is_final:
                 log_event(
                     "SYNC_COMPLETE",
+                    guild_id=payload.guild_id,
                     guild_name=payload.guild_name or "Unknown",
                     token=payload.token,
                     details=f"Completed batch sync ({payload.total_count} actions)"
@@ -235,52 +298,77 @@ async def deploy_single_step(payload: SingleStepPayload):
             return {"status": "error", "detail": str(e)}
 
 
-@app.get("/admin", response_class=HTMLResponse)
-async def admin_panel(key: str = ""):
-    if key != ADMIN_KEY:
-        raise HTTPException(status_code=403, detail="Unauthorized. Append ?key=YOUR_ADMIN_KEY to URL.")
+# --- ADMIN PANEL API ENDPOINTS ---
 
+@app.post("/api/admin/data")
+async def admin_get_data(payload: AdminAuthPayload):
+    verify_admin(payload.username, payload.password)
     conn = sqlite3.connect(DB_PATH)
     unique_users = conn.execute("SELECT COUNT(DISTINCT user_hash) FROM logs WHERE user_hash != '-'").fetchone()[0]
-    unique_servers = conn.execute("SELECT COUNT(DISTINCT guild_name) FROM logs WHERE guild_name != '-'").fetchone()[0]
+    unique_servers = conn.execute("SELECT COUNT(DISTINCT guild_id) FROM logs WHERE guild_id != '-'").fetchone()[0]
     syncs = conn.execute("SELECT COUNT(*) FROM logs WHERE event_type='SYNC_COMPLETE'").fetchone()[0]
-    rows = conn.execute("SELECT created_at, guild_name, user_hash, event_type, details FROM logs ORDER BY id DESC LIMIT 40").fetchall()
+
+    logs = conn.execute(
+        "SELECT id, created_at, guild_name, guild_id, user_hash, event_type, details FROM logs ORDER BY id DESC LIMIT 60"
+    ).fetchall()
+    blocked = conn.execute(
+        "SELECT id, target_value, reason, created_at FROM blacklist ORDER BY id DESC"
+    ).fetchall()
     conn.close()
 
-    table_rows = "".join([
-        f"<tr><td>{r[0]}</td><td><strong>{r[1]}</strong></td><td><code>{r[2]}</code></td><td><span class='tag'>{r[3]}</span></td><td>{r[4]}</td></tr>"
-        for r in rows
-    ])
+    return {
+        "stats": {
+            "unique_users": unique_users,
+            "unique_servers": unique_servers,
+            "syncs": syncs,
+            "blacklisted_count": len(blocked)
+        },
+        "logs": [
+            {"id": r[0], "time": r[1], "guild_name": r[2], "guild_id": r[3], "user_hash": r[4], "event": r[5], "details": r[6]}
+            for r in logs
+        ],
+        "blacklist": [
+            {"id": b[0], "target": b[1], "reason": b[2], "time": b[3]}
+            for b in blocked
+        ]
+    }
 
-    return f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Admin - Server Planner V1</title>
-      <style>
-        body {{ background:#050507; color:#f4f5f8; font-family:Inter,sans-serif; padding:40px; max-width:1050px; margin:0 auto; }}
-        h1 {{ font-weight:600; font-size:22px; margin-bottom:24px; }}
-        .stats {{ display:grid; grid-template-columns:repeat(3, 1fr); gap:18px; margin-bottom:28px; }}
-        .card {{ background:#0d0e12; border:1px solid rgba(255,255,255,0.1); padding:20px 24px; border-radius:14px; }}
-        .num {{ font-size:30px; font-weight:600; color:#38bdf8; }}
-        .lbl {{ font-size:12px; color:#8a909e; margin-top:6px; }}
-        table {{ width:100%; border-collapse:collapse; background:#0d0e12; border-radius:14px; overflow:hidden; font-size:13px; }}
-        th, td {{ padding:14px 16px; text-align:left; border-bottom:1px solid rgba(255,255,255,0.07); }}
-        th {{ color:#8a909e; font-size:11px; text-transform:uppercase; letter-spacing:0.6px; }}
-        .tag {{ background:rgba(56,189,248,0.14); color:#38bdf8; padding:4px 9px; border-radius:6px; font-size:11px; }}
-      </style>
-    </head>
-    <body>
-      <h1>Becquerel development — Usage Overview</h1>
-      <div class="stats">
-        <div class="card"><div class="num">{unique_users}</div><div class="lbl">Unique Users</div></div>
-        <div class="card"><div class="num">{unique_servers}</div><div class="lbl">Servers Connected</div></div>
-        <div class="card"><div class="num">{syncs}</div><div class="lbl">Batch Syncs Run</div></div>
-      </div>
-      <table>
-        <thead><tr><th>Time</th><th>Server Name</th><th>User ID (Hash)</th><th>Activity</th><th>Summary</th></tr></thead>
-        <tbody>{table_rows}</tbody>
-      </table>
-    </body>
-    </html>
-    """
+
+@app.post("/api/admin/delete-log")
+async def admin_delete_log(payload: AdminDeleteLogPayload):
+    verify_admin(payload.username, payload.password)
+    conn = sqlite3.connect(DB_PATH)
+    if payload.log_id is None:
+        conn.execute("DELETE FROM logs")
+    else:
+        conn.execute("DELETE FROM logs WHERE id = ?", (payload.log_id,))
+    conn.commit()
+    conn.close()
+    return {"ok": True}
+
+
+@app.post("/api/admin/blacklist/add")
+async def admin_add_blacklist(payload: AdminBlacklistPayload):
+    verify_admin(payload.username, payload.password)
+    target = payload.target_value.strip()
+    if not target:
+        raise HTTPException(status_code=400, detail="Target value required.")
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute(
+        "INSERT OR REPLACE INTO blacklist (target_value, reason, created_at) VALUES (?, ?, ?)",
+        (target, payload.reason.strip() or "Blacklisted by admin", now)
+    )
+    conn.commit()
+    conn.close()
+    return {"ok": True}
+
+
+@app.post("/api/admin/blacklist/remove")
+async def admin_remove_blacklist(payload: AdminBlacklistPayload):
+    verify_admin(payload.username, payload.password)
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute("DELETE FROM blacklist WHERE target_value = ?", (payload.target_value.strip(),))
+    conn.commit()
+    conn.close()
+    return {"ok": True}
