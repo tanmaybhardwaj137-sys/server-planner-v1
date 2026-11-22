@@ -9,17 +9,16 @@
   <style>
     :root {
       --bg-void: #050507;
-      --bg-panel: rgba(13, 14, 18, 0.84);
-      --bg-elevated: rgba(22, 24, 30, 0.9);
-      --bg-hover: rgba(34, 37, 46, 0.95);
-      --grid-line: rgba(255, 255, 255, 0.032);
+      --bg-panel: rgba(13, 14, 18, 0.86);
+      --bg-elevated: rgba(22, 24, 30, 0.92);
+      --bg-hover: rgba(34, 37, 46, 0.96);
+      --grid-line: rgba(255, 255, 255, 0.03);
       --border: rgba(255, 255, 255, 0.08);
       --border-bright: rgba(255, 255, 255, 0.22);
       --text-primary: #f4f5f8;
       --text-secondary: #8a909e;
       --text-muted: #525766;
       --accent-beam: #38bdf8;
-      --accent-prism: #a855f7;
       --drop-green: #22c55e;
       --danger: #ef4444;
       --warning: #f59e0b;
@@ -30,8 +29,8 @@
 
     [data-theme="light"] {
       --bg-void: #eae8e3;
-      --bg-panel: rgba(246, 245, 242, 0.86);
-      --bg-elevated: rgba(255, 255, 255, 0.92);
+      --bg-panel: rgba(246, 245, 242, 0.88);
+      --bg-elevated: rgba(255, 255, 255, 0.94);
       --bg-hover: rgba(235, 233, 228, 0.96);
       --grid-line: rgba(0, 0, 0, 0.045);
       --border: rgba(0, 0, 0, 0.09);
@@ -40,7 +39,6 @@
       --text-secondary: #5c606b;
       --text-muted: #8e939e;
       --accent-beam: #0284c7;
-      --accent-prism: #7e22ce;
       --drop-green: #16a34a;
       --danger: #dc2626;
       --warning: #d97706;
@@ -63,7 +61,7 @@
       background-image:
         linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
         linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-      background-size: 36px 36px;
+      background-size: 40px 40px;
       color: var(--text-primary);
       height: 100vh;
       display: flex;
@@ -79,20 +77,20 @@
       top: -140px;
       left: 50%;
       transform: translateX(-50%);
-      width: 680px;
+      width: 720px;
       height: 280px;
       background: conic-gradient(from 180deg at 50% 50%, rgba(56, 189, 248, 0.14), rgba(168, 85, 247, 0.12), rgba(34, 197, 94, 0.1), rgba(56, 189, 248, 0.14));
-      filter: blur(75px);
+      filter: blur(80px);
       pointer-events: none;
       z-index: 0;
     }
 
-    /* Header */
+    /* Spacious Header */
     header {
       position: relative;
       z-index: 2;
-      height: 58px;
-      padding: 0 24px;
+      height: 66px;
+      padding: 0 28px;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
@@ -104,36 +102,36 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
 
     .prism-mark {
       width: 0;
       height: 0;
-      border-left: 8px solid transparent;
-      border-right: 8px solid transparent;
-      border-bottom: 14px solid var(--text-primary);
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-bottom: 15px solid var(--text-primary);
       filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.6));
       transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     .brand:hover .prism-mark { transform: translateY(-2px) scale(1.08); }
-    .brand-title { font-size: 14px; font-weight: 600; letter-spacing: -0.2px; }
-    .brand-divider { color: var(--text-muted); font-size: 13px; }
-    .brand-sub { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-secondary); }
+    .brand-title { font-size: 15px; font-weight: 600; letter-spacing: -0.2px; }
+    .brand-divider { color: var(--text-muted); font-size: 14px; }
+    .brand-sub { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--text-secondary); }
 
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
     }
 
     .hud-input {
       background: var(--bg-elevated);
       border: 1px solid var(--border);
       color: var(--text-primary);
-      padding: 7px 13px;
-      border-radius: 8px;
+      padding: 9px 15px;
+      border-radius: 10px;
       font-family: 'JetBrains Mono', monospace;
       font-size: 12px;
       outline: none;
@@ -150,9 +148,9 @@
       background: var(--btn-contrast-bg);
       color: var(--btn-contrast-fg);
       border: none;
-      padding: 7px 15px;
-      border-radius: 8px;
-      font-size: 12.5px;
+      padding: 9px 18px;
+      border-radius: 10px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
@@ -163,44 +161,35 @@
 
     .btn-contrast:hover { transform: translateY(-1px); opacity: 0.92; }
     .btn-contrast:active { transform: scale(0.97); }
+    .btn-contrast:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
 
     .icon-btn {
       background: var(--bg-elevated);
       border: 1px solid var(--border);
       color: var(--text-secondary);
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      font-size: 15px;
       transition: all 0.18s ease;
     }
 
-    .icon-btn:hover {
-      color: var(--text-primary);
-      border-color: var(--border-bright);
-    }
+    .icon-btn:hover { color: var(--text-primary); border-color: var(--border-bright); }
+    .icon-btn.spinning { animation: spin 0.6s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-    .icon-btn.spinning {
-      animation: spin 0.6s linear infinite;
-    }
-
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    /* Shell */
+    /* Spacious Main Shell */
     .shell {
       position: relative;
       z-index: 1;
       display: flex;
       flex: 1;
-      padding: 16px;
-      gap: 16px;
+      padding: 22px 26px;
+      gap: 22px;
       overflow: hidden;
     }
 
@@ -208,7 +197,7 @@
       position: relative;
       background: var(--bg-panel);
       border: 1px solid var(--border);
-      border-radius: 14px;
+      border-radius: 16px;
       backdrop-filter: blur(18px);
       overflow: hidden;
       transition: border-color 0.25s ease;
@@ -218,7 +207,7 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), var(--spotlight), transparent 65%);
+      background: radial-gradient(460px circle at var(--mx, 50%) var(--my, 50%), var(--spotlight), transparent 65%);
       pointer-events: none;
       opacity: 0;
       transition: opacity 0.3s ease;
@@ -226,10 +215,10 @@
 
     .glass-panel:hover::after { opacity: 1; }
 
-    /* Sidebar */
+    /* Spacious Left Sidebar */
     .sidebar {
-      width: 248px;
-      padding: 16px;
+      width: 272px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -238,37 +227,44 @@
 
     .nav-group-title {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
+      font-size: 10.5px;
       letter-spacing: 1px;
       text-transform: uppercase;
       color: var(--text-muted);
       padding: 0 6px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
-    .segmented-switch {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      background: var(--bg-void);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 3px;
-      margin-bottom: 18px;
+    .nav-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 24px;
     }
 
-    .seg-btn {
-      padding: 7px 6px;
-      border-radius: 999px;
-      border: none;
+    .nav-pill {
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: 11px;
+      border: 1px solid transparent;
       background: transparent;
       color: var(--text-secondary);
-      font-size: 11.5px;
+      font-size: 13px;
       font-weight: 500;
+      text-align: left;
       cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.18s ease;
     }
 
-    .seg-btn.active {
+    .nav-pill:hover {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+    }
+
+    .nav-pill.active {
       background: var(--btn-contrast-bg);
       color: var(--btn-contrast-fg);
       font-weight: 600;
@@ -277,9 +273,9 @@
     .telemetry-box {
       background: var(--bg-elevated);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px;
-      margin-bottom: 12px;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 18px;
     }
 
     .telemetry-row {
@@ -287,9 +283,9 @@
       justify-content: space-between;
       align-items: center;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
+      font-size: 11.5px;
       color: var(--text-secondary);
-      padding: 4px 0;
+      padding: 5px 0;
     }
 
     .telemetry-val { color: var(--text-primary); font-weight: 600; }
@@ -297,37 +293,37 @@
     .shortcut-hints {
       background: var(--bg-elevated);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 12px;
+      border-radius: 12px;
+      padding: 12px 14px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
+      font-size: 10.5px;
       color: var(--text-muted);
-      line-height: 1.7;
+      line-height: 1.85;
     }
 
     .kbd {
       background: var(--bg-void);
       border: 1px solid var(--border-bright);
       color: var(--text-secondary);
-      padding: 1px 5px;
+      padding: 2px 6px;
       border-radius: 4px;
-      font-size: 9.5px;
+      font-size: 10px;
     }
 
     .brand-footer-card {
       border-top: 1px solid var(--border);
-      padding-top: 12px;
+      padding-top: 14px;
     }
 
-    .brand-footer-title { font-size: 13px; font-weight: 600; color: var(--text-primary); }
-    .brand-footer-desc { font-size: 11px; color: var(--text-secondary); margin-top: 3px; line-height: 1.4; }
+    .brand-footer-title { font-size: 13.5px; font-weight: 600; color: var(--text-primary); }
+    .brand-footer-desc { font-size: 11.5px; color: var(--text-secondary); margin-top: 4px; line-height: 1.45; }
 
     /* Center Stage */
     .stage {
       flex: 1;
       display: flex;
       flex-direction: column;
-      padding: 20px 24px;
+      padding: 26px 30px;
       overflow: hidden;
     }
 
@@ -335,23 +331,25 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 16px;
+      margin-bottom: 22px;
+      gap: 16px;
     }
 
-    .stage-title { font-size: 24px; font-weight: 600; letter-spacing: -0.5px; }
-    .stage-sub { font-size: 12.5px; color: var(--text-secondary); margin-top: 3px; }
+    .stage-title { font-size: 26px; font-weight: 600; letter-spacing: -0.5px; }
+    .stage-sub { font-size: 13px; color: var(--text-secondary); margin-top: 5px; line-height: 1.4; }
 
     .status-chip {
       display: inline-flex;
       align-items: center;
-      gap: 7px;
+      gap: 8px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      padding: 5px 11px;
+      font-size: 11.5px;
+      padding: 6px 14px;
       border-radius: 999px;
       background: var(--bg-elevated);
       border: 1px solid var(--border);
       color: var(--text-secondary);
+      white-space: nowrap;
     }
 
     .pulse-node {
@@ -365,13 +363,13 @@
     .list-surface {
       flex: 1;
       overflow-y: auto;
-      padding-right: 4px;
+      padding-right: 8px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 10px;
     }
 
-    .list-surface::-webkit-scrollbar { width: 5px; }
+    .list-surface::-webkit-scrollbar { width: 6px; }
     .list-surface::-webkit-scrollbar-thumb {
       background: var(--border-bright);
       border-radius: 99px;
@@ -382,16 +380,17 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    /* Breathable Item Rows */
     .item-row {
       position: relative;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 9px 12px;
+      padding: 12px 16px;
       background: var(--bg-elevated);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      gap: 8px;
+      border-radius: 12px;
+      gap: 12px;
       transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
                   border-color 0.18s ease,
                   box-shadow 0.18s ease,
@@ -404,16 +403,15 @@
       background: var(--bg-hover);
     }
 
-    .item-row.in-category { margin-left: 22px; }
+    .item-row.in-category { margin-left: 28px; }
     .item-row.category {
       background: transparent;
       border: 1px dashed var(--border-bright);
-      margin-top: 10px;
+      margin-top: 14px;
     }
     .item-row.category:first-child { margin-top: 0; }
     .item-row.locked { opacity: 0.72; }
 
-    /* Lifted Drag State */
     .item-row.dragging {
       opacity: 0.95;
       transform: scale(1.02) rotate(0.3deg);
@@ -422,13 +420,12 @@
       z-index: 30;
     }
 
-    /* Glowing Green Drop Indicator Line */
     .item-row.drop-before::before {
       content: "";
       position: absolute;
-      top: -5px;
-      left: 6px;
-      right: 6px;
+      top: -6px;
+      left: 8px;
+      right: 8px;
       height: 3px;
       border-radius: 99px;
       background: var(--drop-green);
@@ -439,9 +436,9 @@
     .item-row.drop-after::after {
       content: "";
       position: absolute;
-      bottom: -5px;
-      left: 6px;
-      right: 6px;
+      bottom: -6px;
+      left: 8px;
+      right: 8px;
       height: 3px;
       border-radius: 99px;
       background: var(--drop-green);
@@ -459,9 +456,9 @@
       font-family: 'JetBrains Mono', monospace;
       color: var(--text-muted);
       cursor: grab;
-      padding: 2px 5px;
-      border-radius: 5px;
-      font-size: 12px;
+      padding: 3px 6px;
+      border-radius: 6px;
+      font-size: 13px;
       transition: color 0.15s;
     }
 
@@ -472,9 +469,9 @@
       background: transparent;
       border: 1px solid transparent;
       color: var(--text-primary);
-      font-size: 13px;
-      padding: 4px 8px;
-      border-radius: 6px;
+      font-size: 13.5px;
+      padding: 5px 9px;
+      border-radius: 7px;
       flex: 1;
       outline: none;
       transition: all 0.15s;
@@ -486,9 +483,9 @@
     }
 
     .topic-pill {
-      font-size: 11px;
+      font-size: 11.5px;
       color: var(--text-muted);
-      max-width: 150px;
+      max-width: 170px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -500,8 +497,8 @@
       color: var(--warning);
       background: rgba(245, 158, 11, 0.12);
       border: 1px solid rgba(245, 158, 11, 0.3);
-      padding: 3px 8px;
-      border-radius: 6px;
+      padding: 4px 10px;
+      border-radius: 7px;
       white-space: nowrap;
     }
 
@@ -510,9 +507,9 @@
       border: 1px solid var(--border);
       color: var(--text-secondary);
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      padding: 4px 9px;
-      border-radius: 6px;
+      font-size: 11.5px;
+      padding: 5px 11px;
+      border-radius: 7px;
       cursor: pointer;
       transition: all 0.15s;
       white-space: nowrap;
@@ -521,7 +518,13 @@
     .hud-btn:hover {
       color: var(--text-primary);
       border-color: var(--border-bright);
-      background: rgba(255, 255, 255, 0.04);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .hud-btn.accent:hover {
+      color: var(--accent-beam);
+      border-color: rgba(56, 189, 248, 0.45);
+      background: rgba(56, 189, 248, 0.1);
     }
 
     .hud-btn.danger:hover {
@@ -532,14 +535,14 @@
 
     /* Command Composer Bar */
     .command-bar {
-      margin-top: 14px;
+      margin-top: 18px;
       background: var(--bg-elevated);
       border: 1px solid var(--border-bright);
-      border-radius: 10px;
-      padding: 8px 12px;
+      border-radius: 12px;
+      padding: 10px 14px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     .command-bar select {
@@ -547,9 +550,9 @@
       border: 1px solid var(--border);
       color: var(--text-primary);
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11.5px;
-      padding: 6px 10px;
-      border-radius: 6px;
+      font-size: 12px;
+      padding: 7px 12px;
+      border-radius: 8px;
       outline: none;
       cursor: pointer;
     }
@@ -559,92 +562,195 @@
       background: transparent;
       border: none;
       color: var(--text-primary);
-      font-size: 13px;
+      font-size: 13.5px;
       outline: none;
-      padding: 4px 6px;
+      padding: 5px 8px;
     }
 
     .command-bar input[type="color"] {
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       border: none;
       background: transparent;
       cursor: pointer;
     }
 
-    /* Blueprints Separated View */
+    /* Emoji Grid */
+    .emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+      gap: 14px;
+    }
+
+    .emoji-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .emoji-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    .emoji-img {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+      border-radius: 6px;
+      background: var(--bg-void);
+      padding: 3px;
+    }
+
+    /* Live Discord Preview Mockup */
+    .discord-preview-shell {
+      display: grid;
+      grid-template-columns: 270px 1fr;
+      gap: 18px;
+      height: 100%;
+    }
+
+    .discord-sidebar-mock {
+      background: #1e1f22;
+      color: #dbdee1;
+      border-radius: 14px;
+      padding: 16px 12px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+    }
+
+    .dc-guild-header {
+      font-weight: 600;
+      font-size: 15px;
+      color: #f2f3f5;
+      padding: 4px 8px 14px 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      margin-bottom: 12px;
+    }
+
+    .dc-cat {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #949ba4;
+      letter-spacing: 0.5px;
+      padding: 12px 8px 4px 8px;
+    }
+
+    .dc-chan {
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 13.5px;
+      color: #949ba4;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin: 2px 0;
+    }
+
+    .dc-chan:hover { background: #35373c; color: #f2f3f5; }
+
+    .discord-roles-mock {
+      background: #2b2d31;
+      color: #dbdee1;
+      border-radius: 14px;
+      padding: 20px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+    }
+
+    .dc-role-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: #1e1f22;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      margin: 4px;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    /* Blueprints View */
     .blueprint-box {
       display: flex;
       flex-direction: column;
-      gap: 14px;
-      padding: 6px 0;
+      gap: 18px;
     }
 
     .blueprint-card {
       background: var(--bg-elevated);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 18px;
+      border-radius: 14px;
+      padding: 20px;
     }
 
-    .blueprint-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
-    .blueprint-card p { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.5; }
+    .blueprint-card h3 { font-size: 15.5px; font-weight: 600; margin-bottom: 6px; }
+    .blueprint-card p { font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.5; }
 
     .json-area {
       width: 100%;
       height: 170px;
       background: var(--bg-void);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 10px;
       color: var(--text-primary);
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11.5px;
-      padding: 12px;
+      font-size: 12px;
+      padding: 14px;
       resize: none;
       outline: none;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       user-select: text;
     }
 
-    /* Right Inspector HUD */
+    /* Spacious Right Inspector HUD + Live Progress Bar */
     .inspector-hud {
-      width: 310px;
+      width: 340px;
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
     }
 
     .hud-bar {
-      padding: 11px 14px;
+      padding: 14px 18px;
       background: rgba(0, 0, 0, 0.25);
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
+      font-size: 11.5px;
       color: var(--text-primary);
     }
 
     .hud-body {
       flex: 1;
       overflow-y: auto;
-      padding: 12px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 7px;
+      gap: 10px;
     }
 
     .queue-node {
-      padding: 9px 11px;
+      padding: 11px 14px;
       background: var(--bg-elevated);
       border: 1px solid var(--border);
-      border-left: 2.5px solid var(--accent-beam);
-      border-radius: 8px;
+      border-left: 3px solid var(--accent-beam);
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 12px;
+      font-size: 12.5px;
+      gap: 8px;
       animation: nodeAppear 0.18s ease forwards;
     }
 
@@ -653,21 +759,59 @@
 
     .queue-op {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 9.5px;
+      font-size: 10px;
       color: var(--text-muted);
       display: block;
-      margin-bottom: 2px;
+      margin-bottom: 3px;
     }
 
-    .hud-footer { padding: 12px; border-top: 1px solid var(--border); }
+    .hud-footer {
+      padding: 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Live Progress Bar */
+    .progress-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 7px;
+      background: var(--bg-void);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent-beam), var(--drop-green));
+      border-radius: 999px;
+      transition: width 0.25s ease;
+    }
 
     .empty-state {
       text-align: center;
       color: var(--text-muted);
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11.5px;
-      margin-top: 56px;
-      line-height: 1.6;
+      font-size: 12px;
+      margin-top: 64px;
+      line-height: 1.7;
     }
 
     /* Modals */
@@ -683,11 +827,11 @@
     }
 
     .modal-card {
-      width: 550px;
+      width: 570px;
       max-height: 84vh;
       background: var(--bg-panel);
       border: 1px solid var(--border-bright);
-      border-radius: 14px;
+      border-radius: 16px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -695,23 +839,23 @@
     }
 
     .modal-head {
-      padding: 15px 18px;
+      padding: 18px 22px;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
-    .modal-head h3 { font-size: 16px; font-weight: 600; }
+    .modal-head h3 { font-size: 16.5px; font-weight: 600; }
 
     .modal-sub-bar {
-      padding: 12px 18px;
+      padding: 14px 22px;
       background: var(--bg-elevated);
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
@@ -720,15 +864,15 @@
       background: var(--bg-void);
       border: 1px solid var(--border);
       color: var(--text-primary);
-      padding: 7px 10px;
-      border-radius: 7px;
+      padding: 8px 12px;
+      border-radius: 8px;
       font-family: 'JetBrains Mono', monospace;
       font-size: 12px;
       outline: none;
     }
 
     .preset-pill {
-      padding: 5px 10px;
+      padding: 6px 12px;
       border-radius: 999px;
       border: 1px solid var(--border-bright);
       background: var(--bg-void);
@@ -745,38 +889,38 @@
     }
 
     .perm-list {
-      padding: 14px 18px;
+      padding: 16px 22px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
     }
 
     .perm-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 9px 12px;
+      padding: 11px 14px;
       background: var(--bg-elevated);
-      border-radius: 9px;
+      border-radius: 10px;
       border: 1px solid var(--border);
     }
 
-    .perm-name { font-size: 12.5px; font-weight: 500; }
-    .perm-desc { font-size: 10.5px; color: var(--text-muted); margin-top: 2px; }
+    .perm-name { font-size: 13px; font-weight: 500; }
+    .perm-desc { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
 
     .tri-toggle {
       display: flex;
       background: var(--bg-void);
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: 7px;
       overflow: hidden;
     }
 
     .tri-btn {
-      padding: 4px 9px;
+      padding: 5px 10px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
+      font-size: 11.5px;
       border: none;
       background: transparent;
       color: var(--text-secondary);
@@ -787,17 +931,16 @@
     .tri-btn.neutral.active { background: var(--bg-hover); color: var(--text-primary); }
     .tri-btn.allow.active { background: rgba(34, 197, 94, 0.22); color: var(--drop-green); font-weight: 600; }
 
-    /* Role Boolean Toggle Switch */
     .bool-switch {
-      padding: 5px 12px;
-      border-radius: 6px;
+      padding: 6px 14px;
+      border-radius: 7px;
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
       border: 1px solid var(--border);
       background: var(--bg-void);
       color: var(--text-secondary);
       cursor: pointer;
-      min-width: 78px;
+      min-width: 82px;
       text-align: center;
     }
 
@@ -811,8 +954,8 @@
     .field-group {
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      margin-bottom: 12px;
+      gap: 7px;
+      margin-bottom: 14px;
     }
 
     .field-group label {
@@ -825,19 +968,20 @@
       background: var(--bg-void);
       border: 1px solid var(--border-bright);
       color: var(--text-primary);
-      padding: 8px 12px;
-      border-radius: 8px;
+      padding: 9px 13px;
+      border-radius: 9px;
       font-size: 13px;
       outline: none;
       user-select: text;
     }
 
     .modal-foot {
-      padding: 12px 18px;
+      padding: 14px 22px;
       border-top: 1px solid var(--border);
       display: flex;
-      justify-content: flex-end;
-      gap: 8px;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
     }
 
     .hidden { display: none !important; }
@@ -854,8 +998,8 @@
     </div>
 
     <div class="header-actions">
-      <input type="password" id="botToken" class="hud-input" placeholder="BOT_TOKEN" style="width: 195px;" />
-      <input type="text" id="guildId" class="hud-input" placeholder="GUILD_ID" style="width: 160px;" />
+      <input type="password" id="botToken" class="hud-input" placeholder="BOT_TOKEN" style="width: 210px;" />
+      <input type="text" id="guildId" class="hud-input" placeholder="GUILD_ID" style="width: 175px;" />
       <button class="btn-contrast" onclick="loadServer()">Connect →</button>
       <button class="icon-btn" id="refreshBtn" title="Refresh Server State (Alt+R)" onclick="loadServer(true)">↻</button>
       <button class="icon-btn" title="Toggle Obsidian / Alabaster Theme" onclick="toggleTheme()">◐</button>
@@ -863,30 +1007,29 @@
   </header>
 
   <div class="shell">
-    <!-- Left Sidebar -->
+    <!-- Left Navigation & Telemetry -->
     <aside class="glass-panel sidebar">
       <div>
-        <div class="nav-group-title">Workspace Mode</div>
-        <div class="segmented-switch">
-          <button class="seg-btn active" id="tabChannels" onclick="switchTab('channels')">Channels</button>
-          <button class="seg-btn" id="tabRoles" onclick="switchTab('roles')">Roles</button>
-          <button class="seg-btn" id="tabBlueprints" onclick="switchTab('blueprints')">JSON</button>
-        </div>
-
-        <div class="nav-group-title">Live Telemetry</div>
-        <div class="telemetry-box">
-          <div class="telemetry-row">
-            <span>CHANNELS</span>
-            <span class="telemetry-val" id="channelCount">0</span>
-          </div>
-          <div class="telemetry-row">
-            <span>ROLES</span>
-            <span class="telemetry-val" id="roleCount">0</span>
-          </div>
-          <div class="telemetry-row">
-            <span>QUEUED_OPS</span>
-            <span class="telemetry-val" id="queueBadge" style="color: var(--accent-beam);">0</span>
-          </div>
+        <div class="nav-group-title">Workspace</div>
+        <div class="nav-menu">
+          <button class="nav-pill active" id="tabChannels" onclick="switchTab('channels')">
+            <span># Channels & Categories</span>
+            <span class="mono" style="font-size:11px;" id="channelCount">0</span>
+          </button>
+          <button class="nav-pill" id="tabRoles" onclick="switchTab('roles')">
+            <span>◈ Roles & Hierarchy</span>
+            <span class="mono" style="font-size:11px;" id="roleCount">0</span>
+          </button>
+          <button class="nav-pill" id="tabEmojis" onclick="switchTab('emojis')">
+            <span>✦ Custom Emojis</span>
+            <span class="mono" style="font-size:11px;" id="emojiCount">0</span>
+          </button>
+          <button class="nav-pill" id="tabPreview" onclick="switchTab('preview')">
+            <span>👁 Live Discord Preview</span>
+          </button>
+          <button class="nav-pill" id="tabBlueprints" onclick="switchTab('blueprints')">
+            <span>{ } JSON Blueprints</span>
+          </button>
         </div>
 
         <div class="nav-group-title">Shortcuts</div>
@@ -911,7 +1054,7 @@
       <div class="stage-header">
         <div>
           <h1 class="stage-title" id="viewHeading">Channels & Categories</h1>
-          <p class="stage-sub" id="viewSubheading">Hold & drag any channel across categories, edit topics & slowmode, or set permission overwrites.</p>
+          <p class="stage-sub" id="viewSubheading">Hold & drag any channel across categories, sync category permissions, or edit channel topics.</p>
         </div>
         <div class="status-chip">
           <span class="pulse-node"></span>
@@ -919,15 +1062,23 @@
         </div>
       </div>
 
-      <!-- Channels View -->
+      <!-- 1. Channels View -->
       <div class="list-surface" id="channelsView">
         <div class="empty-state">[ AWAITING CONNECTION ]<br/>Enter BOT_TOKEN & GUILD_ID above to initialize server graph.</div>
       </div>
 
-      <!-- Roles View -->
+      <!-- 2. Roles View -->
       <div class="list-surface hidden" id="rolesView"></div>
 
-      <!-- Separated JSON Blueprints View -->
+      <!-- 3. Custom Emojis View -->
+      <div class="list-surface hidden" id="emojisView">
+        <div class="empty-state">Connect a server to manage custom emojis.</div>
+      </div>
+
+      <!-- 4. Live Discord Preview View -->
+      <div class="list-surface hidden" id="previewView"></div>
+
+      <!-- 5. JSON Blueprints View -->
       <div class="list-surface hidden" id="blueprintsView">
         <div class="blueprint-box">
           <div class="blueprint-card">
@@ -964,9 +1115,19 @@
         <input type="text" id="newRoleName" placeholder="Create new role title..." onkeydown="if(event.key==='Enter') stageCreateRole()" />
         <button class="btn-contrast" onclick="stageCreateRole()">+ Stage</button>
       </div>
+
+      <!-- Emoji Upload Bar -->
+      <div class="command-bar hidden" id="emojiComposer">
+        <input type="text" id="newEmojiName" placeholder="emoji_name (alphanumeric & underscores)..." />
+        <label class="hud-btn" style="cursor:pointer; padding: 8px 14px;">
+          <span id="emojiFileLabel">Choose PNG/GIF</span>
+          <input type="file" id="newEmojiFile" accept="image/png,image/gif,image/jpeg" style="display:none" onchange="updateEmojiFileLabel(this)" />
+        </label>
+        <button class="btn-contrast" onclick="stageCreateEmoji()">+ Stage Emoji</button>
+      </div>
     </main>
 
-    <!-- Right Action Queue Inspector -->
+    <!-- Right Action Queue Inspector + Live Progress Bar -->
     <aside class="glass-panel inspector-hud">
       <div class="hud-bar">
         <span>▾ Action Queue (<span id="queueCount">0</span>)</span>
@@ -978,7 +1139,17 @@
       </div>
 
       <div class="hud-footer">
-        <button class="btn-contrast" style="width: 100%; justify-content: center; padding: 10px;" onclick="deployQueue()">
+        <div class="progress-wrap hidden" id="progressContainer">
+          <div class="progress-label">
+            <span id="progressText">Syncing...</span>
+            <span id="progressPercent">0%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+
+        <button class="btn-contrast" id="deployBtn" style="width: 100%; justify-content: center; padding: 11px;" onclick="deployQueue()">
           Execute Batch Sync →
         </button>
       </div>
@@ -1006,17 +1177,17 @@
 
   <!-- MODAL 2: Channel Topic, Slowmode & NSFW Settings -->
   <div class="modal-backdrop hidden" id="channelMetaModal">
-    <div class="modal-card" style="width: 460px;">
+    <div class="modal-card" style="width: 480px;">
       <div class="modal-head">
         <h3 id="metaModalTitle">Channel Settings</h3>
         <button class="hud-btn" onclick="closeAllModals()">ESC</button>
       </div>
-      <div style="padding: 18px;">
-        <div class="field-group" id="topicFieldGroup">
+      <div style="padding: 20px;">
+        <div class="field-group">
           <label>CHANNEL TOPIC</label>
           <textarea id="metaTopicInput" rows="3" placeholder="Set channel guidelines, links, or description..."></textarea>
         </div>
-        <div class="field-group" id="slowmodeFieldGroup">
+        <div class="field-group">
           <label>SLOWMODE COOLDOWN</label>
           <select id="metaSlowmodeSelect">
             <option value="0">Off (0s)</option>
@@ -1029,7 +1200,7 @@
             <option value="3600">1 hour</option>
           </select>
         </div>
-        <div class="perm-row" id="nsfwFieldGroup">
+        <div class="perm-row">
           <div>
             <div class="perm-name">Age-Restricted (NSFW)</div>
             <div class="perm-desc">Require users to confirm age before viewing</div>
@@ -1044,7 +1215,7 @@
     </div>
   </div>
 
-  <!-- MODAL 3: Role Powers & Quick Presets -->
+  <!-- MODAL 3: Role Powers, Quick Presets & Sync to All Channels -->
   <div class="modal-backdrop hidden" id="rolePowersModal">
     <div class="modal-card">
       <div class="modal-head">
@@ -1060,14 +1231,16 @@
       </div>
       <div class="perm-list" id="rolePowersList"></div>
       <div class="modal-foot">
-        <button class="hud-btn" onclick="closeAllModals()">Cancel</button>
-        <button class="btn-contrast" onclick="stageRolePowers()">Stage Role Powers</button>
+        <button class="hud-btn accent" title="Apply this role's View/Send/Connect permissions to all channels" onclick="stageSyncRoleToChannels()">Sync Role to All Channels</button>
+        <div style="display:flex; gap:8px;">
+          <button class="hud-btn" onclick="closeAllModals()">Cancel</button>
+          <button class="btn-contrast" onclick="stageRolePowers()">Stage Powers</button>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
-    /* Cursor-tracking spotlight */
     document.addEventListener('mousemove', (e) => {
       document.querySelectorAll('.glass-panel').forEach(panel => {
         const rect = panel.getBoundingClientRect();
@@ -1076,7 +1249,6 @@
       });
     });
 
-    /* Global Keyboard Shortcuts */
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeAllModals();
@@ -1135,10 +1307,13 @@
 
     let state = {
       activeTab: 'channels',
+      guildName: '',
+      guildId: '',
       channels: [],
-      originalParents: {}, // Tracks initial parent_id per channel to send clean parent_changes
+      originalParents: {},
       allRoles: [],
       roles: [],
+      emojis: [],
       botTopPosition: 0,
       queue: [],
       editingChannelId: null,
@@ -1146,7 +1321,7 @@
       tempPermStates: {},
       tempRoleBitfield: 0n,
       tempNsfw: false,
-      dragType: null, // 'channel' | 'role'
+      dragType: null,
       draggedId: null,
       dropMode: null
     };
@@ -1155,27 +1330,27 @@
 
     function switchTab(tab) {
       state.activeTab = tab;
-      document.getElementById('tabChannels').classList.toggle('active', tab === 'channels');
-      document.getElementById('tabRoles').classList.toggle('active', tab === 'roles');
-      document.getElementById('tabBlueprints').classList.toggle('active', tab === 'blueprints');
-
-      document.getElementById('channelsView').classList.toggle('hidden', tab !== 'channels');
-      document.getElementById('rolesView').classList.toggle('hidden', tab !== 'roles');
-      document.getElementById('blueprintsView').classList.toggle('hidden', tab !== 'blueprints');
+      ['channels', 'roles', 'emojis', 'preview', 'blueprints'].forEach(t => {
+        const cap = t.charAt(0).toUpperCase() + t.slice(1);
+        document.getElementById('tab' + cap).classList.toggle('active', tab === t);
+        document.getElementById(t + 'View').classList.toggle('hidden', tab !== t);
+      });
 
       document.getElementById('channelComposer').classList.toggle('hidden', tab !== 'channels');
       document.getElementById('roleComposer').classList.toggle('hidden', tab !== 'roles');
+      document.getElementById('emojiComposer').classList.toggle('hidden', tab !== 'emojis');
 
-      if (tab === 'channels') {
-        document.getElementById('viewHeading').innerText = 'Channels & Categories';
-        document.getElementById('viewSubheading').innerText = 'Hold & drag any channel across categories, edit topics & slowmode, or set permission overwrites.';
-      } else if (tab === 'roles') {
-        document.getElementById('viewHeading').innerText = 'Roles & Hierarchy';
-        document.getElementById('viewSubheading').innerText = 'Drag unlocked roles to reorder hierarchy, apply quick power presets, or upload Boost Level 2 icons.';
-      } else {
-        document.getElementById('viewHeading').innerText = 'Server Blueprints (JSON)';
-        document.getElementById('viewSubheading').innerText = 'Export your server architecture as JSON or import a saved layout into the staging queue.';
-      }
+      const titles = {
+        channels: ['Channels & Categories', 'Hold & drag any channel across categories, sync category permissions, or edit channel topics.'],
+        roles: ['Roles & Hierarchy', 'Drag unlocked roles to reorder hierarchy, apply quick power presets, or sync role permissions.'],
+        emojis: ['Custom Emojis', 'Upload new PNG/GIF custom emojis or remove unused ones in batch.'],
+        preview: ['Live Discord Preview', 'Real-time visual preview of your channel sidebar and role hierarchy before syncing.'],
+        blueprints: ['Server Blueprints (JSON)', 'Export your server architecture as JSON or import a saved layout into the staging queue.']
+      };
+      document.getElementById('viewHeading').innerText = titles[tab][0];
+      document.getElementById('viewSubheading').innerText = titles[tab][1];
+
+      if (tab === 'preview') renderDiscordPreview();
     }
 
     function toggleCategorySelect() {
@@ -1201,7 +1376,10 @@
         if (!res.ok) throw new Error((await res.json()).detail || "Failed to load");
         const data = await res.json();
 
+        state.guildName = data.guild.name;
+        state.guildId = data.guild.id;
         document.getElementById('guildNameDisplay').innerText = data.guild.name.toUpperCase();
+
         state.channels = normalizeDiscordTree(data.channels);
         state.originalParents = {};
         state.channels.forEach(c => { state.originalParents[c.id] = c.parent_id || null; });
@@ -1209,6 +1387,7 @@
         state.botTopPosition = data.bot_top_position || 0;
         state.allRoles = data.roles;
         state.roles = data.roles.filter(r => r.name !== "@everyone");
+        state.emojis = data.emojis || [];
         state.queue = [];
         renderAll();
         setStatus("CONNECTED");
@@ -1247,10 +1426,13 @@
     function renderAll() {
       document.getElementById('channelCount').innerText = state.channels.length;
       document.getElementById('roleCount').innerText = state.roles.length;
+      document.getElementById('emojiCount').innerText = state.emojis.length;
       updateCategoryDropdown();
       renderChannels();
       renderRoles();
+      renderEmojis();
       renderQueue();
+      if (state.activeTab === 'preview') renderDiscordPreview();
     }
 
     /* CHANNELS RENDER & DRAG */
@@ -1270,6 +1452,7 @@
         const topicBadge = (!isCat && ch.topic) ? `<span class="topic-pill" title="${ch.topic}">${ch.topic}</span>` : '';
 
         const actionBtns = !isTemp ? `
+          ${isCat ? `<button class="hud-btn accent" title="Push this category's permissions to all channels inside it" onclick="stageSyncCategoryPerms('${ch.id}')">Sync Perms</button>` : ''}
           ${!isCat ? `<button class="hud-btn" onclick="openMetaModal('${ch.id}')">Topic</button>` : ''}
           <button class="hud-btn" onclick="openPermModal('${ch.id}')">Perms</button>
         ` : '';
@@ -1317,7 +1500,7 @@
 
         row.innerHTML = `
           <span class="drag-grip" title="Hold & drag to move">⋮⋮</span>
-          <span class="mono" style="color: var(--text-muted); font-size: 12px;">${prefix}</span>
+          <span class="mono" style="color: var(--text-muted); font-size: 13px;">${prefix}</span>
           <input class="inline-input" value="${ch.name}" onchange="stageRenameChannel('${ch.id}', this.value)" />
           ${topicBadge}
           ${actionBtns}
@@ -1325,6 +1508,28 @@
         `;
         container.appendChild(row);
       });
+    }
+
+    function stageSyncCategoryPerms(catId) {
+      const cat = state.channels.find(c => c.id === catId);
+      if (!cat) return;
+      const children = state.channels.filter(c => c.parent_id === catId && !c.id.startsWith('temp_'));
+      if (children.length === 0) return alert("This category has no saved channels inside it yet.");
+
+      const overwrites = cat.permission_overwrites || [];
+      children.forEach(child => { child.permission_overwrites = JSON.parse(JSON.stringify(overwrites)); });
+
+      state.queue.push({
+        id: uid(),
+        type: 'SYNC_CATEGORY_PERMS',
+        target_id: catId,
+        label: `Sync 📁 ${cat.name} → ${children.length} channels`,
+        data: {
+          permission_overwrites: overwrites,
+          child_ids: children.map(c => c.id)
+        }
+      });
+      renderQueue();
     }
 
     function handleChannelDrop(e, targetCh) {
@@ -1406,10 +1611,10 @@
       });
     }
 
-    /* ROLES RENDER, LOCK DETECTION & HIERARCHY DRAG */
+    /* ROLES RENDER, LOCK & HIERARCHY */
     function isRoleLocked(role) {
       if (role.id.startsWith('temp_')) return false;
-      if (role.managed) return true; // Bot integration / Nitro booster role
+      if (role.managed) return true;
       if (state.botTopPosition > 0 && role.position >= state.botTopPosition) return true;
       return false;
     }
@@ -1462,7 +1667,7 @@
         const rightControls = locked
           ? `<span class="lock-badge" title="Managed integration or positioned above bot's highest role">🔒 Locked</span>`
           : `
-            ${!isTemp ? `<button class="hud-btn" onclick="openRolePowersModal('${role.id}')">Powers</button>` : ''}
+            ${!isTemp ? `<button class="hud-btn accent" onclick="openRolePowersModal('${role.id}')">Powers & Sync</button>` : ''}
             <label class="hud-btn" style="cursor:pointer;">
               ${role.hasNewIcon ? '✓ Icon' : '+ Icon'}
               <input type="file" accept="image/png,image/jpeg" style="display:none" onchange="stageRoleIcon('${role.id}', '${role.name}', this)" />
@@ -1472,7 +1677,7 @@
 
         row.innerHTML = `
           <span class="drag-grip" style="${locked ? 'opacity:0.25; cursor:not-allowed;' : ''}">⋮⋮</span>
-          <span style="width: 10px; height: 10px; border-radius: 50%; background: ${hex}; box-shadow: 0 0 8px ${hex}; flex-shrink: 0;"></span>
+          <span style="width: 11px; height: 11px; border-radius: 50%; background: ${hex}; box-shadow: 0 0 8px ${hex}; flex-shrink: 0;"></span>
           <input class="inline-input" value="${role.name}" ${locked ? 'disabled' : `onchange="stageEditRoleName('${role.id}', this.value)"`} />
           ${rightControls}
         `;
@@ -1495,7 +1700,6 @@
       if (mode === 'after') targetIdx++;
       state.roles.splice(targetIdx, 0, moved);
 
-      // Compute descending Discord role positions (highest role at top)
       const total = state.roles.length;
       const updates = [];
       state.roles.forEach((r, idx) => {
@@ -1528,7 +1732,102 @@
       state.dropMode = null;
     }
 
-    /* ROLE POWERS MODAL & QUICK PRESETS */
+    /* CUSTOM EMOJIS RENDER & STAGING */
+    function renderEmojis() {
+      const container = document.getElementById('emojisView');
+      if (state.emojis.length === 0) {
+        container.innerHTML = '<div class="empty-state">No custom emojis found (or server not connected yet).</div>';
+        return;
+      }
+      const grid = document.createElement('div');
+      grid.className = 'emoji-grid';
+      state.emojis.forEach(em => {
+        const ext = em.animated ? 'gif' : 'png';
+        const url = em.preview_url || `https://cdn.discordapp.com/emojis/${em.id}.${ext}?size=64`;
+        const card = document.createElement('div');
+        card.className = 'emoji-card';
+        card.innerHTML = `
+          <div class="emoji-info">
+            <img class="emoji-img" src="${url}" alt="${em.name}" />
+            <span class="mono" style="font-size:12px;">:${em.name}:</span>
+          </div>
+          <button class="hud-btn danger" onclick="stageDeleteEmoji('${em.id}', '${em.name}')">Del</button>
+        `;
+        grid.appendChild(card);
+      });
+      container.innerHTML = '';
+      container.appendChild(grid);
+    }
+
+    function updateEmojiFileLabel(input) {
+      const f = input.files[0];
+      document.getElementById('emojiFileLabel').innerText = f ? f.name.slice(0, 16) : 'Choose PNG/GIF';
+    }
+
+    function stageCreateEmoji() {
+      const nameInput = document.getElementById('newEmojiName');
+      const fileInput = document.getElementById('newEmojiFile');
+      const name = nameInput.value.trim().replace(/[^a-zA-Z0-9_]/g, '');
+      const file = fileInput.files[0];
+      if (!name || !file) return alert("Enter an emoji name and pick a PNG/GIF file.");
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const tempId = 'temp_' + uid();
+        state.emojis.unshift({ id: tempId, name, preview_url: reader.result });
+        state.queue.push({
+          id: uid(),
+          type: 'CREATE_EMOJI',
+          label: `:${name}:`,
+          data: { name, image_base64: reader.result }
+        });
+        nameInput.value = '';
+        fileInput.value = '';
+        document.getElementById('emojiFileLabel').innerText = 'Choose PNG/GIF';
+        renderAll();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function stageDeleteEmoji(id, name) {
+      state.emojis = state.emojis.filter(e => e.id !== id);
+      if (!id.startsWith('temp_')) {
+        state.queue.push({ id: uid(), type: 'DELETE_EMOJI', target_id: id, label: `:${name}:`, data: {} });
+      }
+      renderAll();
+    }
+
+    /* LIVE DISCORD PREVIEW RENDER */
+    function renderDiscordPreview() {
+      const container = document.getElementById('previewView');
+      const guildTitle = state.guildName || 'Discord Server Preview';
+
+      let sidebarHtml = `<div class="dc-guild-header">${guildTitle}</div>`;
+      state.channels.forEach(ch => {
+        if (ch.type === 4) {
+          sidebarHtml += `<div class="dc-cat">▾ ${ch.name}</div>`;
+        } else {
+          const icon = ch.type === 2 ? '🔊' : '#';
+          sidebarHtml += `<div class="dc-chan"><span>${icon}</span><span>${ch.name}</span></div>`;
+        }
+      });
+
+      let rolesHtml = `<h3 style="font-size:14px; margin-bottom:12px; color:#f2f3f5;">Role Hierarchy Preview (${state.roles.length})</h3><div>`;
+      state.roles.forEach(r => {
+        const hex = r.color ? '#' + r.color.toString(16).padStart(6, '0') : '#949ba4';
+        rolesHtml += `<span class="dc-role-pill"><span style="width:10px; height:10px; border-radius:50%; background:${hex};"></span>${r.name}</span>`;
+      });
+      rolesHtml += `</div>`;
+
+      container.innerHTML = `
+        <div class="discord-preview-shell">
+          <div class="discord-sidebar-mock">${sidebarHtml}</div>
+          <div class="discord-roles-mock">${rolesHtml}</div>
+        </div>
+      `;
+    }
+
+    /* ROLE POWERS MODAL & CHANNEL SYNC */
     function openRolePowersModal(roleId) {
       const role = state.roles.find(r => r.id === roleId);
       if (!role) return;
@@ -1541,27 +1840,13 @@
 
     function applyRolePreset(preset) {
       if (preset === 'owner') {
-        state.tempRoleBitfield = (1n << 3n); // Administrator
+        state.tempRoleBitfield = (1n << 3n);
       } else if (preset === 'mod') {
-        // Moderator: View, Manage Channels, Timeout Members (1<<40), Manage Messages, Read History, Voice Mute
-        // Explicitly excludes Administrator (1<<3) and Ban Members (1<<2)
         state.tempRoleBitfield =
-          (1n << 10n) | // VIEW_CHANNEL
-          (1n << 4n)  | // MANAGE_CHANNELS
-          (1n << 40n) | // MODERATE_MEMBERS (Timeout)
-          (1n << 13n) | // MANAGE_MESSAGES
-          (1n << 11n) | // SEND_MESSAGES
-          (1n << 16n) | // READ_MESSAGE_HISTORY
-          (1n << 20n) | // CONNECT
-          (1n << 21n) | // SPEAK
-          (1n << 22n);  // MUTE_MEMBERS
+          (1n << 10n) | (1n << 4n) | (1n << 40n) | (1n << 13n) |
+          (1n << 11n) | (1n << 16n) | (1n << 20n) | (1n << 21n) | (1n << 22n);
       } else if (preset === 'member') {
-        state.tempRoleBitfield =
-          (1n << 10n) | // VIEW_CHANNEL
-          (1n << 11n) | // SEND_MESSAGES
-          (1n << 16n) | // READ_MESSAGE_HISTORY
-          (1n << 20n) | // CONNECT
-          (1n << 21n);  // SPEAK
+        state.tempRoleBitfield = (1n << 10n) | (1n << 11n) | (1n << 16n) | (1n << 20n) | (1n << 21n);
       } else {
         state.tempRoleBitfield = 0n;
       }
@@ -1569,11 +1854,8 @@
     }
 
     function toggleRoleBit(bit) {
-      if ((state.tempRoleBitfield & bit) === bit) {
-        state.tempRoleBitfield &= ~bit;
-      } else {
-        state.tempRoleBitfield |= bit;
-      }
+      if ((state.tempRoleBitfield & bit) === bit) state.tempRoleBitfield &= ~bit;
+      else state.tempRoleBitfield |= bit;
       renderRolePowersList();
     }
 
@@ -1613,7 +1895,29 @@
       closeAllModals();
     }
 
-    /* CHANNEL TOPIC / SLOWMODE / NSFW MODAL */
+    function stageSyncRoleToChannels() {
+      const role = state.roles.find(r => r.id === state.editingRoleId);
+      if (!role) return;
+
+      // Extract channel-relevant allow bits from the role's current powers
+      const channelRelevantMask = (1n << 10n) | (1n << 11n) | (1n << 16n) | (1n << 20n) | (1n << 21n) | (1n << 13n) | (1n << 4n);
+      const allowBits = state.tempRoleBitfield & channelRelevantMask;
+
+      const targets = state.channels.filter(c => !c.id.startsWith('temp_'));
+      targets.forEach(ch => {
+        state.queue.push({
+          id: uid(),
+          type: 'EDIT_CHANNEL_PERMS',
+          target_id: ch.id,
+          label: `Sync @${role.name} → ${ch.name}`,
+          data: { overwrite_id: role.id, overwrite_type: 0, allow: allowBits.toString(), deny: "0" }
+        });
+      });
+      renderQueue();
+      closeAllModals();
+    }
+
+    /* CHANNEL TOPIC / SLOWMODE MODAL */
     function openMetaModal(channelId) {
       const ch = state.channels.find(c => c.id === channelId);
       if (!ch) return;
@@ -1759,7 +2063,7 @@
       closeAllModals();
     }
 
-    /* JSON BLUEPRINTS (SEPARATE TAB) */
+    /* JSON BLUEPRINTS */
     function exportBlueprint() {
       const blueprint = {
         exported_by: "Server Planner V1 - Becquerel development",
@@ -1808,12 +2112,11 @@
       }
     }
 
-    /* QUEUE & CRUD STAGING */
+    /* QUEUE & LIVE STEP-BY-STEP DEPLOYMENT WITH PROGRESS BAR */
     function renderQueue() {
       const container = document.getElementById('queueList');
       const count = state.queue.length;
       document.getElementById('queueCount').innerText = count;
-      document.getElementById('queueBadge').innerText = count;
 
       if (count === 0) {
         container.innerHTML = '<div class="empty-state">No staged mutations.<br/>Edits buffer here at 0ms latency.</div>';
@@ -1822,7 +2125,7 @@
       container.innerHTML = '';
       state.queue.forEach(item => {
         const isDel = item.type.includes('DELETE');
-        const isMove = item.type.includes('REORDER');
+        const isMove = item.type.includes('REORDER') || item.type.includes('SYNC');
         const div = document.createElement('div');
         div.className = `queue-node ${isDel ? 'del' : ''} ${isMove ? 'move' : ''}`;
         div.innerHTML = `
@@ -1944,24 +2247,57 @@
       const token = document.getElementById('botToken').value.trim();
       const guild_id = document.getElementById('guildId').value.trim();
 
-      setStatus(`SYNCING (${state.queue.length})...`);
-      try {
-        const res = await fetch('/api/deploy', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token, guild_id, actions: state.queue })
-        });
-        const data = await res.json();
-        const failed = data.results.filter(r => r.status === 'error');
-        if (failed.length > 0) {
-          setStatus(`ERR: ${failed[0].detail}`);
-        } else {
-          setStatus("SYNCED");
-          await loadServer();
+      const total = state.queue.length;
+      const progressBox = document.getElementById('progressContainer');
+      const progressFill = document.getElementById('progressFill');
+      const progressText = document.getElementById('progressText');
+      const progressPercent = document.getElementById('progressPercent');
+      const deployBtn = document.getElementById('deployBtn');
+
+      progressBox.classList.remove('hidden');
+      deployBtn.disabled = true;
+
+      for (let i = 0; i < total; i++) {
+        const pct = Math.round(((i + 1) / total) * 100);
+        progressText.innerText = `Syncing ${i + 1} / ${total}...`;
+        progressPercent.innerText = `${pct}%`;
+        progressFill.style.width = `${pct}%`;
+        setStatus(`SYNCING ${i + 1}/${total}`);
+
+        try {
+          const res = await fetch('/api/deploy-step', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              token,
+              guild_id,
+              guild_name: state.guildName,
+              action: state.queue[i],
+              is_final: i === total - 1,
+              total_count: total
+            })
+          });
+          const data = await res.json();
+          if (data.status === 'error') {
+            setStatus(`ERR: ${data.detail}`);
+            deployBtn.disabled = false;
+            return;
+          }
+        } catch (err) {
+          setStatus("SYNC FAILED");
+          deployBtn.disabled = false;
+          return;
         }
-      } catch (err) {
-        setStatus("SYNC FAILED");
       }
+
+      setStatus("SYNCED");
+      setTimeout(() => {
+        progressBox.classList.add('hidden');
+        progressFill.style.width = '0%';
+        deployBtn.disabled = false;
+      }, 900);
+
+      await loadServer(true);
     }
 
     function setStatus(msg) {
