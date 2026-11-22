@@ -1191,7 +1191,7 @@
 
       const titles = {
         channels: ['Channels & Categories', 'Click + on any category to create a channel inside it, drag nodes to reorder, or set @everyone & role permissions.'],
-        roles: ['Roles & Hierarchy', 'Drag unlocked roles to reorder hierarchy, apply quick power presets, or sync role permissions.'],
+        roles: ['Roles & Hierarchy', 'Drag roles (including bot roles) up or down to slot custom roles between them, apply quick presets, or sync role permissions.'],
         emojis: ['Custom Emojis', 'Upload new PNG/GIF custom emojis or remove unused ones in batch.'],
         preview: ['Live Discord Preview', 'Real-time visual preview of your channel sidebar and role hierarchy before syncing.'],
         blueprints: ['Server Blueprints (JSON)', 'Export your server architecture as JSON or import a saved layout into the staging queue.']
@@ -1380,7 +1380,7 @@
       if (!cat) return;
       state.quickTargetCatId = catId;
       document.getElementById('catQuickTitle').innerText = `New Channel in 📁 ${cat.name}`;
-      document.getElementById('catQuickType').value = "0"; // Default: Text Channel
+      document.getElementById('catQuickType').value = "0";
       document.getElementById('catQuickName').value = "";
       document.getElementById('catQuickCreateModal').classList.remove('hidden');
       setTimeout(() => document.getElementById('catQuickName').focus(), 50);
@@ -1545,10 +1545,9 @@
       });
     }
 
-    /* ROLES RENDER, LOCK & HIERARCHY */
-    function isRoleLocked(role) {
+    /* ROLES RENDER: Managed Bot Roles remain draggable so custom roles can slot between them */
+    function isRoleAboveBot(role) {
       if (role.id.startsWith('temp_')) return false;
-      if (role.managed) return true;
       if (state.botTopPosition > 0 && role.position >= state.botTopPosition) return true;
       return false;
     }
@@ -1563,15 +1562,16 @@
 
       state.roles.forEach(role => {
         const hex = role.color ? '#' + role.color.toString(16).padStart(6, '0') : '#8a909e';
-        const locked = isRoleLocked(role);
+        const aboveBot = isRoleAboveBot(role);
+        const isManagedBot = Boolean(role.managed);
         const isTemp = role.id.startsWith('temp_');
 
         const row = document.createElement('div');
-        row.className = `item-row ${locked ? 'locked' : ''}`;
-        row.draggable = !locked;
+        row.className = `item-row ${aboveBot ? 'locked' : ''}`;
+        row.draggable = !aboveBot;
         row.dataset.id = role.id;
 
-        if (!locked) {
+        if (!aboveBot) {
           row.addEventListener('dragstart', (e) => {
             state.dragType = 'role';
             state.draggedId = role.id;
@@ -1598,21 +1598,30 @@
           row.addEventListener('dragend', () => resetDragState());
         }
 
-        const rightControls = locked
-          ? `<span class="lock-badge" title="Managed integration or positioned above bot's highest role">🔒 Locked</span>`
-          : `
-            ${!isTemp ? `<button class="hud-btn accent" onclick="openRolePowersModal('${role.id}')">Powers & Sync</button>` : ''}
-            <label class="hud-btn" style="cursor:pointer;">
-              ${role.hasNewIcon ? '✓ Icon' : '+ Icon'}
-              <input type="file" accept="image/png,image/jpeg" style="display:none" onchange="stageRoleIcon('${role.id}', '${role.name}', this)" />
-            </label>
-            <button class="hud-btn danger" onclick="stageDeleteRole('${role.id}', '${role.name}')">Del</button>
-          `;
+        let rightControls = '';
+        if (aboveBot) {
+          rightControls = `<span class="lock-badge" title="Above your bot's highest role">🔒 Above Bot</span>`;
+        } else {
+          const powersBtn = !isTemp
+            ? `<button class="hud-btn accent" onclick="openRolePowersModal('${role.id}')">Powers & Sync</button>`
+            : '';
+          const iconBtn = !isManagedBot
+            ? `<label class="hud-btn" style="cursor:pointer;">
+                 ${role.hasNewIcon ? '✓ Icon' : '+ Icon'}
+                 <input type="file" accept="image/png,image/jpeg" style="display:none" onchange="stageRoleIcon('${role.id}', '${role.name}', this)" />
+               </label>`
+            : '';
+          const deleteOrLockBtn = isManagedBot
+            ? `<span class="lock-badge" title="Discord-managed bot role cannot be deleted, but you can drag it up & down">🔒 Bot (No Del)</span>`
+            : `<button class="hud-btn danger" onclick="stageDeleteRole('${role.id}', '${role.name}')">Del</button>`;
+
+          rightControls = `${powersBtn}${iconBtn}${deleteOrLockBtn}`;
+        }
 
         row.innerHTML = `
-          <span class="drag-grip" style="${locked ? 'opacity:0.25; cursor:not-allowed;' : ''}">⋮⋮</span>
+          <span class="drag-grip" style="${aboveBot ? 'opacity:0.25; cursor:not-allowed;' : ''}" title="${aboveBot ? 'Locked' : 'Drag up or down to reorder'}">⋮⋮</span>
           <span style="width: 11px; height: 11px; border-radius: 50%; background: ${hex}; box-shadow: 0 0 8px ${hex}; flex-shrink: 0;"></span>
-          <input class="inline-input" value="${role.name}" ${locked ? 'disabled' : `onchange="stageEditRoleName('${role.id}', this.value)"`} />
+          <input class="inline-input" value="${role.name}" ${aboveBot ? 'disabled' : `onchange="stageEditRoleName('${role.id}', this.value)"`} />
           ${rightControls}
         `;
         container.appendChild(row);
@@ -1637,7 +1646,7 @@
       const total = state.roles.length;
       const updates = [];
       state.roles.forEach((r, idx) => {
-        if (!r.id.startsWith('temp_') && !isRoleLocked(r)) {
+        if (!r.id.startsWith('temp_') && !isRoleAboveBot(r)) {
           updates.push({ id: r.id, position: total - idx });
         }
       });
@@ -1904,7 +1913,6 @@
       const select = document.getElementById('permRoleSelect');
       select.innerHTML = '';
 
-      // Sort roles so @everyone appears first and is selected by default
       const sortedForPerm = [...state.allRoles].sort((a, b) => {
         const aIsEveryone = (a.name === '@everyone' || a.id === state.guildId) ? -1 : 0;
         const bIsEveryone = (b.name === '@everyone' || b.id === state.guildId) ? -1 : 0;
@@ -2057,7 +2065,6 @@
         document.getElementById('admSyncs').innerText = data.stats.syncs;
         document.getElementById('admBlocked').innerText = data.stats.blacklisted_count;
 
-        // Render blacklist chips
         const blBox = document.getElementById('blacklistChips');
         blBox.innerHTML = data.blacklist.length === 0
           ? '<span class="mono" style="font-size:11px; color:var(--text-muted);">No blacklisted targets.</span>'
@@ -2072,7 +2079,6 @@
           blBox.appendChild(chip);
         });
 
-        // Render logs table
         const tbody = document.getElementById('adminLogsTbody');
         tbody.innerHTML = '';
         data.logs.forEach(l => {
