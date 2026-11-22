@@ -1,1522 +1,248 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Server Planner V1 — Becquerel development</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg-base: #110e0c;
-      --bg-sidebar: #14110f;
-      --bg-surface: #1b1715;
-      --bg-elevated: #231e1b;
-      --bg-hover: #2c2622;
-      --border: rgba(255, 245, 235, 0.08);
-      --border-strong: rgba(255, 245, 235, 0.16);
-      --text-primary: #f2ede7;
-      --text-secondary: #9c9288;
-      --text-muted: #665e57;
-      --accent-terracotta: #d96b43;
-      --accent-terracotta-soft: rgba(217, 107, 67, 0.14);
-      --drop-green: #22c55e;
-      --pill-white: #f4f1ec;
-      --pill-white-text: #14110f;
-      --status-green: #22c55e;
-      --danger: #e56464;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-
-    body {
-      background-color: var(--bg-base);
-      background-image: radial-gradient(circle at 62% 28%, rgba(217, 107, 67, 0.12) 0%, rgba(17, 14, 12, 0) 58%);
-      color: var(--text-primary);
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      user-select: none;
-    }
-
-    /* Top Header */
-    header {
-      height: 62px;
-      padding: 0 24px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(17, 14, 12, 0.8);
-      backdrop-filter: blur(14px);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--accent-terracotta-soft);
-      border: 1px solid rgba(217, 107, 67, 0.35);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--accent-terracotta);
-      font-weight: 600;
-      font-size: 14px;
-      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    .brand:hover .brand-icon {
-      transform: rotate(90deg) scale(1.06);
-    }
-
-    .brand-title {
-      font-size: 15px;
-      font-weight: 600;
-      letter-spacing: -0.2px;
-    }
-
-    .auth-controls {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .pill-input {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      color: var(--text-primary);
-      padding: 8px 16px;
-      border-radius: 999px;
-      font-size: 13px;
-      outline: none;
-      transition: all 0.2s ease;
-    }
-
-    .pill-input::placeholder { color: var(--text-muted); }
-    .pill-input:focus {
-      border-color: var(--accent-terracotta);
-      background: var(--bg-elevated);
-      box-shadow: 0 0 0 3px rgba(217, 107, 67, 0.14);
-    }
-
-    .btn-white-pill {
-      background: var(--pill-white);
-      color: var(--pill-white-text);
-      border: none;
-      padding: 8px 18px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s ease;
-    }
-
-    .btn-white-pill:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(244, 241, 236, 0.16);
-    }
-
-    .btn-white-pill:active { transform: scale(0.97); }
-
-    .btn-terracotta {
-      background: var(--accent-terracotta);
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.18s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    .btn-terracotta:hover {
-      filter: brightness(1.08);
-      transform: translateY(-1px);
-      box-shadow: 0 8px 24px rgba(217, 107, 67, 0.28);
-    }
-
-    .btn-terracotta:active { transform: scale(0.97); }
-
-    /* Main Layout */
-    .app-shell {
-      display: flex;
-      flex: 1;
-      padding: 16px;
-      gap: 16px;
-      overflow: hidden;
-    }
-
-    .sidebar {
-      width: 260px;
-      background: var(--bg-sidebar);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      flex-shrink: 0;
-    }
-
-    .sidebar-top {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      overflow: hidden;
-    }
-
-    .btn-outline-pill {
-      width: 100%;
-      background: transparent;
-      border: 1px solid var(--border-strong);
-      color: var(--text-primary);
-      padding: 10px 16px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.18s ease;
-    }
-
-    .btn-outline-pill:hover {
-      background: var(--bg-elevated);
-      border-color: rgba(255, 245, 235, 0.28);
-    }
-
-    .nav-section-label {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.9px;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      padding: 0 10px;
-      margin-bottom: 6px;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .nav-item {
-      padding: 10px 14px;
-      border-radius: 12px;
-      font-size: 13px;
-      color: var(--text-secondary);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: all 0.18s ease;
-      margin-bottom: 4px;
-    }
-
-    .nav-item:hover {
-      background: var(--bg-surface);
-      color: var(--text-primary);
-      transform: translateX(2px);
-    }
-
-    .nav-item.active {
-      background: var(--bg-elevated);
-      color: var(--text-primary);
-      font-weight: 500;
-      box-shadow: inset 0 0 0 1px var(--border-strong);
-    }
-
-    .badge-count {
-      font-size: 11px;
-      background: var(--bg-base);
-      color: var(--text-secondary);
-      padding: 2px 8px;
-      border-radius: 99px;
-      border: 1px solid var(--border);
-      transition: all 0.25s ease;
-    }
-
-    .badge-count.has-items {
-      background: var(--accent-terracotta-soft);
-      color: var(--accent-terracotta);
-      border-color: rgba(217, 107, 67, 0.35);
-    }
-
-    .dev-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px;
-      transition: border-color 0.2s ease;
-    }
-
-    .dev-card:hover { border-color: var(--border-strong); }
-
-    .dev-card-title {
-      font-size: 13.5px;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 4px;
-    }
-
-    .dev-card-sub {
-      font-size: 11.5px;
-      line-height: 1.45;
-      color: var(--text-secondary);
-    }
-
-    /* Main Workspace Frame */
-    .main-frame {
-      flex: 1;
-      background: rgba(20, 17, 15, 0.65);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .frame-topbar {
-      height: 54px;
-      padding: 0 22px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .frame-breadcrumb {
-      font-size: 13px;
-      color: var(--text-secondary);
-      font-weight: 500;
-    }
-
-    .live-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      padding: 5px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      color: var(--text-secondary);
-    }
-
-    .live-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--status-green);
-      box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
-    }
-
-    .workspace-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 24px 28px;
-      overflow: hidden;
-    }
-
-    .editorial-header {
-      margin-bottom: 20px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-    }
-
-    .editorial-title {
-      font-family: 'Instrument Serif', Georgia, serif;
-      font-size: 36px;
-      font-weight: 400;
-      letter-spacing: -0.4px;
-      color: var(--text-primary);
-      line-height: 1.1;
-    }
-
-    .editorial-sub {
-      font-size: 13px;
-      color: var(--text-secondary);
-      margin-top: 4px;
-    }
-
-    .editor-grid {
-      display: grid;
-      grid-template-columns: 1fr 340px;
-      gap: 20px;
-      flex: 1;
-      overflow: hidden;
-    }
-
-    .card-box {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .scroll-area {
-      flex: 1;
-      overflow-y: auto;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .scroll-area::-webkit-scrollbar { width: 5px; }
-    .scroll-area::-webkit-scrollbar-thumb {
-      background: rgba(255, 245, 235, 0.12);
-      border-radius: 99px;
-    }
-
-    /* Channel & Category Rows with Smooth Drag & Drop */
-    @keyframes fadeSlideIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .item-row {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 9px 14px;
-      background: var(--bg-elevated);
-      border: 1px solid transparent;
-      border-radius: 12px;
-      gap: 8px;
-      transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
-                  box-shadow 0.2s ease,
-                  background 0.15s ease,
-                  border-color 0.15s ease;
-      animation: fadeSlideIn 0.22s ease forwards;
-    }
-
-    .item-row:hover {
-      border-color: var(--border-strong);
-      background: var(--bg-hover);
-    }
-
-    .item-row.in-category {
-      margin-left: 20px;
-      border-left: 2px solid rgba(255, 245, 235, 0.08);
-    }
-
-    .item-row.category {
-      background: rgba(255, 245, 235, 0.025);
-      border: 1px dashed var(--border-strong);
-      margin-top: 10px;
-    }
-
-    .item-row.category:first-child {
-      margin-top: 0;
-    }
-
-    /* Lifted Dragging State */
-    .item-row.dragging {
-      opacity: 0.92;
-      transform: scale(1.025) rotate(0.4deg);
-      background: #2f2823;
-      border-color: var(--accent-terracotta);
-      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.65);
-      z-index: 20;
-    }
-
-    /* Glowing Green Drop Indicator Line */
-    .item-row.drop-before::before {
-      content: "";
-      position: absolute;
-      top: -5px;
-      left: 8px;
-      right: 8px;
-      height: 3px;
-      border-radius: 99px;
-      background: var(--drop-green);
-      box-shadow: 0 0 10px rgba(34, 197, 94, 0.85);
-      pointer-events: none;
-    }
-
-    .item-row.drop-after::after {
-      content: "";
-      position: absolute;
-      bottom: -5px;
-      left: 8px;
-      right: 8px;
-      height: 3px;
-      border-radius: 99px;
-      background: var(--drop-green);
-      box-shadow: 0 0 10px rgba(34, 197, 94, 0.85);
-      pointer-events: none;
-    }
-
-    .item-row.drop-into-category {
-      border: 1.5px solid var(--drop-green) !important;
-      background: rgba(34, 197, 94, 0.1) !important;
-      box-shadow: 0 0 16px rgba(34, 197, 94, 0.25);
-    }
-
-    .drag-handle {
-      color: var(--text-muted);
-      cursor: grab;
-      font-size: 14px;
-      padding: 2px 4px;
-      border-radius: 6px;
-      transition: color 0.15s, background 0.15s;
-    }
-
-    .drag-handle:hover {
-      color: var(--text-primary);
-      background: rgba(255, 255, 255, 0.06);
-    }
-
-    .drag-handle:active { cursor: grabbing; }
-
-    .inline-edit {
-      background: transparent;
-      border: 1px solid transparent;
-      color: var(--text-primary);
-      font-size: 13.5px;
-      padding: 4px 8px;
-      border-radius: 8px;
-      flex: 1;
-      outline: none;
-      transition: all 0.15s ease;
-    }
-
-    .inline-edit:focus {
-      background: var(--bg-base);
-      border-color: var(--accent-terracotta);
-    }
-
-    .btn-subtle {
-      background: rgba(255, 245, 235, 0.05);
-      color: var(--text-secondary);
-      border: 1px solid var(--border);
-      padding: 5px 10px;
-      border-radius: 8px;
-      font-size: 12px;
-      cursor: pointer;
-      transition: all 0.15s;
-      white-space: nowrap;
-    }
-
-    .btn-subtle:hover {
-      color: var(--text-primary);
-      border-color: var(--border-strong);
-      background: rgba(255, 245, 235, 0.09);
-    }
-
-    .btn-del {
-      background: rgba(229, 100, 100, 0.1);
-      color: var(--danger);
-      border: none;
-      padding: 5px 10px;
-      border-radius: 8px;
-      font-size: 12px;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-
-    .btn-del:hover { background: rgba(229, 100, 100, 0.22); }
-
-    /* Bottom Composer Bar */
-    .composer-bar {
-      margin-top: 16px;
-      background: var(--bg-surface);
-      border: 1px solid var(--border-strong);
-      border-radius: 16px;
-      padding: 10px 14px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .composer-bar:focus-within {
-      border-color: rgba(217, 107, 67, 0.5);
-      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
-    }
-
-    .composer-bar select, .composer-bar input[type="text"] {
-      background: transparent;
-      border: none;
-      color: var(--text-primary);
-      font-size: 13px;
-      outline: none;
-    }
-
-    .composer-bar select {
-      background: var(--bg-elevated);
-      padding: 7px 12px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      cursor: pointer;
-      max-width: 170px;
-    }
-
-    .composer-bar input[type="text"] {
-      flex: 1;
-      padding: 6px 8px;
-    }
-
-    .composer-bar input[type="color"] {
-      width: 30px;
-      height: 30px;
-      border: none;
-      background: transparent;
-      cursor: pointer;
-    }
-
-    .send-circle {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      background: var(--accent-terracotta);
-      color: #fff;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      cursor: pointer;
-      flex-shrink: 0;
-      transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    .send-circle:hover { transform: scale(1.08); }
-    .send-circle:active { transform: scale(0.95); }
-
-    /* Queue */
-    .queue-header {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.7px;
-    }
-
-    .queue-card {
-      padding: 10px 12px;
-      background: var(--bg-elevated);
-      border-radius: 10px;
-      border-left: 3px solid var(--accent-terracotta);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 12.5px;
-      animation: fadeSlideIn 0.2s ease forwards;
-    }
-
-    .queue-card.del { border-left-color: var(--danger); }
-    .queue-card.move { border-left-color: var(--drop-green); }
-
-    .queue-meta {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      color: var(--text-muted);
-      display: block;
-      margin-bottom: 2px;
-    }
-
-    .empty-hint {
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 13px;
-      margin-top: 48px;
-    }
-
-    /* Permissions Modal */
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(10, 8, 7, 0.78);
-      backdrop-filter: blur(8px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-      animation: fadeSlideIn 0.18s ease;
-    }
-
-    .modal-card {
-      width: 540px;
-      max-height: 82vh;
-      background: var(--bg-surface);
-      border: 1px solid var(--border-strong);
-      border-radius: 20px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
-    }
-
-    .modal-head {
-      padding: 18px 22px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .modal-head h3 {
-      font-family: 'Instrument Serif', Georgia, serif;
-      font-size: 26px;
-      font-weight: 400;
-    }
-
-    .modal-role-bar {
-      padding: 14px 22px;
-      background: var(--bg-elevated);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .modal-role-bar select {
-      flex: 1;
-      background: var(--bg-base);
-      border: 1px solid var(--border-strong);
-      color: var(--text-primary);
-      padding: 8px 12px;
-      border-radius: 10px;
-      font-size: 13px;
-      outline: none;
-    }
-
-    .perm-list {
-      padding: 16px 22px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .perm-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 14px;
-      background: var(--bg-elevated);
-      border-radius: 12px;
-      border: 1px solid var(--border);
-    }
-
-    .perm-info { display: flex; flex-direction: column; }
-    .perm-name { font-size: 13px; font-weight: 500; color: var(--text-primary); }
-    .perm-desc { font-size: 11px; color: var(--text-muted); }
-
-    .tri-toggle {
-      display: flex;
-      background: var(--bg-base);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .tri-btn {
-      padding: 5px 10px;
-      font-size: 12px;
-      border: none;
-      background: transparent;
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: all 0.12s;
-    }
-
-    .tri-btn.deny.active { background: rgba(229, 100, 100, 0.25); color: var(--danger); font-weight: 600; }
-    .tri-btn.neutral.active { background: var(--bg-hover); color: var(--text-primary); }
-    .tri-btn.allow.active { background: rgba(34, 197, 94, 0.22); color: var(--status-green); font-weight: 600; }
-
-    .modal-foot {
-      padding: 14px 22px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-    }
-
-    .hidden { display: none !important; }
-  </style>
-</head>
-<body>
-
-  <!-- Top Navigation -->
-  <header>
-    <div class="brand">
-      <div class="brand-icon">✦</div>
-      <span class="brand-title">Server Planner V1</span>
-    </div>
-
-    <div class="auth-controls">
-      <input type="password" id="botToken" class="pill-input" placeholder="Bot Token..." style="width: 220px;" />
-      <input type="text" id="guildId" class="pill-input" placeholder="Server ID..." style="width: 175px;" />
-      <button class="btn-white-pill" onclick="loadServer()">Load Server →</button>
-    </div>
-  </header>
-
-  <div class="app-shell">
-    <!-- Left Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-top">
-        <button class="btn-outline-pill" onclick="clearQueue()">
-          <span>+</span> Clear Staged Queue
-        </button>
-
-        <div>
-          <div class="nav-section-label">
-            <span>Architecture</span>
-          </div>
-          <div class="nav-item active" id="tabChannels" onclick="switchTab('channels')">
-            <span># Channels & Categories</span>
-            <span class="badge-count" id="channelCount">0</span>
-          </div>
-          <div class="nav-item" id="tabRoles" onclick="switchTab('roles')">
-            <span>◈ Roles & Icons</span>
-            <span class="badge-count" id="roleCount">0</span>
-          </div>
-        </div>
-
-        <div>
-          <div class="nav-section-label">
-            <span>Deployment</span>
-          </div>
-          <div class="nav-item" style="cursor: default;">
-            <span>Pending Actions</span>
-            <span class="badge-count" id="queueBadge">0</span>
-          </div>
-        </div>
+import os
+import asyncio
+import hashlib
+import sqlite3
+from datetime import datetime, timezone
+import aiohttp
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import FileResponse, HTMLResponse
+from pydantic import BaseModel
+from typing import List, Optional, Dict, Any
+
+app = FastAPI(title="Server Planner V1")
+DISCORD_API = "https://discord.com/api/v10"
+DB_PATH = "analytics.db"
+ADMIN_KEY = os.environ.get("ADMIN_KEY", "becquerel2026")
+
+
+def init_db():
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            event_type TEXT,
+            guild_id TEXT,
+            guild_name TEXT,
+            user_hash TEXT,
+            ip_address TEXT,
+            details TEXT,
+            created_at TEXT
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+
+init_db()
+
+
+def log_event(event_type: str, ip: str, guild_id: str = "-", guild_name: str = "-", token: str = "", details: str = ""):
+    user_hash = hashlib.sha256(token.strip().encode()).hexdigest()[:12] if token else "-"
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute(
+        "INSERT INTO logs (event_type, guild_id, guild_name, user_hash, ip_address, details, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (event_type, guild_id, guild_name, user_hash, ip, details, now)
+    )
+    conn.commit()
+    conn.close()
+
+
+def get_client_ip(request: Request) -> str:
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
+
+
+class AuthPayload(BaseModel):
+    token: str
+    guild_id: str
+
+
+class ActionItem(BaseModel):
+    id: str
+    type: str
+    target_id: Optional[str] = None
+    data: Dict[str, Any] = {}
+
+
+class DeployPayload(BaseModel):
+    token: str
+    guild_id: str
+    actions: List[ActionItem]
+
+
+def get_headers(token: str) -> Dict[str, str]:
+    clean_token = token.strip()
+    if not clean_token.startswith("Bot "):
+        clean_token = f"Bot {clean_token}"
+    return {
+        "Authorization": clean_token,
+        "Content-Type": "application/json",
+        "X-Audit-Log-Reason": "Server Planner V1 — Becquerel development"
+    }
+
+
+async def discord_request(session: aiohttp.ClientSession, method: str, url: str, headers: dict, json_data: Any = None):
+    while True:
+        async with session.request(method, url, headers=headers, json=json_data) as resp:
+            if resp.status == 429:
+                retry_after = float(resp.headers.get("Retry-After", 1.5))
+                await asyncio.sleep(retry_after + 0.2)
+                continue
+            if resp.status == 204:
+                return {"ok": True}
+            data = await resp.json()
+            if resp.status >= 400:
+                raise HTTPException(status_code=resp.status, detail=data.get("message", "Discord API Error"))
+            return data
+
+
+@app.get("/")
+async def serve_ui(request: Request):
+    log_event("PAGE_VISIT", get_client_ip(request), details="Opened Server Planner V1")
+    return FileResponse("ui.html")
+
+
+@app.post("/api/load")
+async def load_guild(payload: AuthPayload, request: Request):
+    headers = get_headers(payload.token)
+    async with aiohttp.ClientSession() as session:
+        guild = await discord_request(session, "GET", f"{DISCORD_API}/guilds/{payload.guild_id}", headers)
+        channels = await discord_request(session, "GET", f"{DISCORD_API}/guilds/{payload.guild_id}/channels", headers)
+        roles = await discord_request(session, "GET", f"{DISCORD_API}/guilds/{payload.guild_id}/roles", headers)
+
+    channels.sort(key=lambda c: c.get("position", 0))
+    roles.sort(key=lambda r: r.get("position", 0), reverse=True)
+
+    log_event(
+        "LOAD_SERVER",
+        get_client_ip(request),
+        guild_id=payload.guild_id,
+        guild_name=guild.get("name", "Unknown"),
+        token=payload.token,
+        details=f"Loaded {len(channels)} channels, {len(roles)} roles"
+    )
+
+    return {
+        "guild": {"id": guild["id"], "name": guild["name"], "icon": guild.get("icon")},
+        "channels": channels,
+        "roles": roles
+    }
+
+
+@app.post("/api/deploy")
+async def deploy_changes(payload: DeployPayload, request: Request):
+    headers = get_headers(payload.token)
+    results = []
+
+    async with aiohttp.ClientSession() as session:
+        for action in payload.actions:
+            t = action.type
+            d = action.data
+            try:
+                if t == "CREATE_CHANNEL":
+                    body = {"name": d["name"], "type": d.get("channel_type", 0)}
+                    if d.get("parent_id"):
+                        body["parent_id"] = d["parent_id"]
+                    await discord_request(session, "POST", f"{DISCORD_API}/guilds/{payload.guild_id}/channels", headers, body)
+
+                elif t == "RENAME_CHANNEL":
+                    await discord_request(session, "PATCH", f"{DISCORD_API}/channels/{action.target_id}", headers, {"name": d["name"]})
+
+                elif t == "DELETE_CHANNEL":
+                    await discord_request(session, "DELETE", f"{DISCORD_API}/channels/{action.target_id}", headers)
+
+                elif t == "REORDER_CHANNELS":
+                    # Bulk update positions and parent categories in one API call
+                    updates = d.get("updates", [])
+                    if updates:
+                        await discord_request(session, "PATCH", f"{DISCORD_API}/guilds/{payload.guild_id}/channels", headers, updates)
+
+                elif t == "EDIT_CHANNEL_PERMS":
+                    body = {"allow": str(d["allow"]), "deny": str(d["deny"]), "type": d.get("overwrite_type", 0)}
+                    await discord_request(session, "PUT", f"{DISCORD_API}/channels/{action.target_id}/permissions/{d['overwrite_id']}", headers, body)
+
+                elif t == "CREATE_ROLE":
+                    body = {"name": d["name"], "color": int(d.get("color", "#d96b43").lstrip("#"), 16)}
+                    if d.get("icon_base64"):
+                        body["icon"] = d["icon_base64"]
+                    await discord_request(session, "POST", f"{DISCORD_API}/guilds/{payload.guild_id}/roles", headers, body)
+
+                elif t == "EDIT_ROLE":
+                    body = {}
+                    if "name" in d:
+                        body["name"] = d["name"]
+                    if "color" in d:
+                        body["color"] = int(d["color"].lstrip("#"), 16)
+                    if d.get("icon_base64"):
+                        body["icon"] = d["icon_base64"]
+                    await discord_request(session, "PATCH", f"{DISCORD_API}/guilds/{payload.guild_id}/roles/{action.target_id}", headers, body)
+
+                elif t == "DELETE_ROLE":
+                    await discord_request(session, "DELETE", f"{DISCORD_API}/guilds/{payload.guild_id}/roles/{action.target_id}", headers)
+
+                results.append({"id": action.id, "status": "success"})
+            except Exception as e:
+                results.append({"id": action.id, "status": "error", "detail": str(e)})
+
+    log_event(
+        "DEPLOY_QUEUE",
+        get_client_ip(request),
+        guild_id=payload.guild_id,
+        token=payload.token,
+        details=f"Executed {len(payload.actions)} staged actions"
+    )
+    return {"results": results}
+
+
+@app.get("/admin", response_class=HTMLResponse)
+async def admin_panel(key: str = ""):
+    if key != ADMIN_KEY:
+        raise HTTPException(status_code=403, detail="Unauthorized. Append ?key=YOUR_ADMIN_KEY to URL.")
+
+    conn = sqlite3.connect(DB_PATH)
+    visits = conn.execute("SELECT COUNT(*) FROM logs WHERE event_type='PAGE_VISIT'").fetchone()[0]
+    unique_users = conn.execute("SELECT COUNT(DISTINCT user_hash) FROM logs WHERE user_hash != '-'").fetchone()[0]
+    deploys = conn.execute("SELECT COUNT(*) FROM logs WHERE event_type='DEPLOY_QUEUE'").fetchone()[0]
+    rows = conn.execute("SELECT event_type, guild_name, guild_id, user_hash, ip_address, details, created_at FROM logs ORDER BY id DESC LIMIT 50").fetchall()
+    conn.close()
+
+    table_rows = "".join([
+        f"<tr><td>{r[6]}</td><td><span class='tag'>{r[0]}</span></td><td>{r[1]} ({r[2]})</td><td><code>{r[3]}</code></td><td>{r[4]}</td><td>{r[5]}</td></tr>"
+        for r in rows
+    ])
+
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Admin — Server Planner V1</title>
+      <style>
+        body {{ background:#110e0c; color:#f2ede7; font-family:Inter,sans-serif; padding:32px; }}
+        h1 {{ font-weight:500; margin-bottom:20px; }}
+        .stats {{ display:flex; gap:16px; margin-bottom:24px; }}
+        .card {{ background:#1b1715; border:1px solid rgba(255,245,235,0.1); padding:18px 24px; border-radius:14px; min-width:180px; }}
+        .num {{ font-size:28px; font-weight:600; color:#d96b43; }}
+        .lbl {{ font-size:12px; color:#9c9288; margin-top:4px; }}
+        table {{ width:100%; border-collapse:collapse; background:#1b1715; border-radius:14px; overflow:hidden; font-size:13px; }}
+        th, td {{ padding:12px 14px; text-align:left; border-bottom:1px solid rgba(255,245,235,0.07); }}
+        th {{ color:#9c9288; font-size:11px; text-transform:uppercase; }}
+        .tag {{ background:rgba(217,107,67,0.16); color:#d96b43; padding:3px 8px; border-radius:6px; font-size:11px; }}
+      </style>
+    </head>
+    <body>
+      <h1>Becquerel development — Management Panel</h1>
+      <div class="stats">
+        <div class="card"><div class="num">{visits}</div><div class="lbl">Total Page Visits</div></div>
+        <div class="card"><div class="num">{unique_users}</div><div class="lbl">Unique Bot Users</div></div>
+        <div class="card"><div class="num">{deploys}</div><div class="lbl">Total Deployments</div></div>
       </div>
-
-      <div class="dev-card">
-        <div class="dev-card-title">Becquerel development</div>
-        <div class="dev-card-sub">
-          Drag channels between categories, edit permissions, and deploy in one batch.
-        </div>
-      </div>
-    </aside>
-
-    <!-- Main Content Frame -->
-    <main class="main-frame">
-      <div class="frame-topbar">
-        <span class="frame-breadcrumb" id="guildNameDisplay">No server connected</span>
-        <div class="live-pill">
-          <span class="live-dot"></span>
-          <span id="statusLabel">Ready</span>
-        </div>
-      </div>
-
-      <div class="workspace-content">
-        <div class="editorial-header">
-          <div>
-            <h1 class="editorial-title" id="viewHeading">Channels & Structure.</h1>
-            <p class="editorial-sub" id="viewSubheading">Hold and drag any channel to lift & move it across categories, or configure permissions.</p>
-          </div>
-
-          <button class="btn-terracotta" onclick="deployQueue()">
-            Deploy Changes →
-          </button>
-        </div>
-
-        <div class="editor-grid">
-          <!-- Active Tab List -->
-          <div class="card-box">
-            <div class="scroll-area" id="channelsView">
-              <div class="empty-hint">Enter your Bot Token & Server ID at the top right to load your workspace.</div>
-            </div>
-            <div class="scroll-area hidden" id="rolesView"></div>
-          </div>
-
-          <!-- Staged Changes Queue -->
-          <div class="card-box">
-            <div class="queue-header">
-              <span>Staged Queue (<span id="queueCount">0</span>)</span>
-              <span style="cursor:pointer; color: var(--accent-terracotta);" onclick="clearQueue()">Reset</span>
-            </div>
-            <div class="scroll-area" id="queueList">
-              <div class="empty-hint">Your local edits will queue here before syncing to Discord.</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bottom Composer Bar (Channel Creator with Category Selector) -->
-        <div class="composer-bar" id="channelComposer">
-          <select id="newChannelType" onchange="toggleCategorySelect()">
-            <option value="0"># Text</option>
-            <option value="2">🔊 Voice</option>
-            <option value="4">📁 Category</option>
-          </select>
-          <select id="newChannelCategory" title="Target Category">
-            <option value="">No Category (Top)</option>
-          </select>
-          <input type="text" id="newChannelName" placeholder="Create a new channel or category..." onkeydown="if(event.key==='Enter') stageCreateChannel()" />
-          <button class="send-circle" title="Stage Channel" onclick="stageCreateChannel()">↑</button>
-        </div>
-
-        <!-- Bottom Composer Bar (Role Creator) -->
-        <div class="composer-bar hidden" id="roleComposer">
-          <input type="color" id="newRoleColor" value="#d96b43" title="Pick Role Color" />
-          <input type="text" id="newRoleName" placeholder="Create a new role (e.g. Moderator, VIP, Member)..." onkeydown="if(event.key==='Enter') stageCreateRole()" />
-          <button class="send-circle" title="Stage Role" onclick="stageCreateRole()">↑</button>
-        </div>
-      </div>
-    </main>
-  </div>
-
-  <!-- CHANNEL & CATEGORY PERMISSIONS MODAL -->
-  <div class="modal-backdrop hidden" id="permModal">
-    <div class="modal-card">
-      <div class="modal-head">
-        <h3 id="permModalTitle">Channel Permissions</h3>
-        <button class="btn-subtle" onclick="closePermModal()">✕</button>
-      </div>
-
-      <div class="modal-role-bar">
-        <span style="font-size: 12.5px; color: var(--text-secondary);">Target Role:</span>
-        <select id="permRoleSelect" onchange="loadRoleOverwritesIntoModal()"></select>
-      </div>
-
-      <div class="perm-list" id="permListContainer"></div>
-
-      <div class="modal-foot">
-        <button class="btn-subtle" onclick="closePermModal()">Cancel</button>
-        <button class="btn-terracotta" onclick="stageChannelPermissions()">Stage Permissions</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const PERMISSIONS = [
-      { key: "VIEW_CHANNEL", bit: 1n << 10n, name: "View Channel", desc: "Allows members to see this channel or category" },
-      { key: "MANAGE_CHANNELS", bit: 1n << 4n, name: "Manage Channel", desc: "Allows editing channel name, topic, and settings" },
-      { key: "MANAGE_ROLES", bit: 1n << 28n, name: "Manage Permissions", desc: "Allows modifying permission overwrites on this channel" },
-      { key: "SEND_MESSAGES", bit: 1n << 11n, name: "Send Messages", desc: "Allows sending messages in text channels" },
-      { key: "EMBED_LINKS", bit: 1n << 14n, name: "Embed Links", desc: "Links pasted will show rich previews" },
-      { key: "ATTACH_FILES", bit: 1n << 15n, name: "Attach Files", desc: "Allows uploading images and files" },
-      { key: "READ_MESSAGE_HISTORY", bit: 1n << 16n, name: "Read Message History", desc: "Allows reading previous messages" },
-      { key: "MENTION_EVERYONE", bit: 1n << 17n, name: "Mention @everyone", desc: "Allows pinging @everyone and @here" },
-      { key: "MANAGE_MESSAGES", bit: 1n << 13n, name: "Manage Messages", desc: "Allows deleting or pinning others' messages" },
-      { key: "CONNECT", bit: 1n << 20n, name: "Connect (Voice)", desc: "Allows joining voice channels" },
-      { key: "SPEAK", bit: 1n << 21n, name: "Speak (Voice)", desc: "Allows talking in voice channels" },
-      { key: "MUTE_MEMBERS", bit: 1n << 22n, name: "Mute Members", desc: "Allows server-muting members in voice" }
-    ];
-
-    let state = {
-      activeTab: 'channels',
-      channels: [],
-      allRoles: [],
-      roles: [],
-      queue: [],
-      editingChannelId: null,
-      tempPermStates: {},
-      draggedId: null,
-      dropTargetId: null,
-      dropMode: null // 'before' | 'after' | 'into'
-    };
-
-    function uid() {
-      return Math.random().toString(36).substring(2, 9);
-    }
-
-    function switchTab(tab) {
-      state.activeTab = tab;
-      document.getElementById('tabChannels').classList.toggle('active', tab === 'channels');
-      document.getElementById('tabRoles').classList.toggle('active', tab === 'roles');
-
-      document.getElementById('channelsView').classList.toggle('hidden', tab !== 'channels');
-      document.getElementById('rolesView').classList.toggle('hidden', tab !== 'roles');
-
-      document.getElementById('channelComposer').classList.toggle('hidden', tab !== 'channels');
-      document.getElementById('roleComposer').classList.toggle('hidden', tab !== 'roles');
-
-      if (tab === 'channels') {
-        document.getElementById('viewHeading').innerText = 'Channels & Structure.';
-        document.getElementById('viewSubheading').innerText = 'Hold and drag any channel to lift & move it across categories, or configure permissions.';
-      } else {
-        document.getElementById('viewHeading').innerText = 'Roles & Hierarchy.';
-        document.getElementById('viewSubheading').innerText = 'Stage custom roles, rename titles, and attach Boost Level 2 icons in batch.';
-      }
-    }
-
-    function toggleCategorySelect() {
-      const type = document.getElementById('newChannelType').value;
-      document.getElementById('newChannelCategory').classList.toggle('hidden', type === '4');
-    }
-
-    async function loadServer() {
-      const token = document.getElementById('botToken').value.trim();
-      const guild_id = document.getElementById('guildId').value.trim();
-      if (!token || !guild_id) return alert("Please enter both your Bot Token and Server ID.");
-
-      setStatus("Connecting...");
-      try {
-        const res = await fetch('/api/load', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token, guild_id })
-        });
-        if (!res.ok) throw new Error((await res.json()).detail || "Failed to load");
-        const data = await res.json();
-
-        document.getElementById('guildNameDisplay').innerText = data.guild.name;
-        state.channels = normalizeDiscordTree(data.channels);
-        state.allRoles = data.roles;
-        state.roles = data.roles.filter(r => r.name !== "@everyone");
-        state.queue = [];
-        renderAll();
-        setStatus("Connected");
-      } catch (err) {
-        setStatus("Error: " + err.message);
-      }
-    }
-
-    // Orders channels into Discord's visual tree: uncategorized first, then each category followed by its children
-    function normalizeDiscordTree(rawChannels) {
-      const categories = rawChannels.filter(c => c.type === 4).sort((a, b) => a.position - b.position);
-      const nonCats = rawChannels.filter(c => c.type !== 4).sort((a, b) => a.position - b.position);
-
-      const ordered = [];
-      nonCats.filter(c => !c.parent_id).forEach(c => ordered.push(c));
-      categories.forEach(cat => {
-        ordered.push(cat);
-        nonCats.filter(c => c.parent_id === cat.id).forEach(child => ordered.push(child));
-      });
-      return ordered;
-    }
-
-    function updateCategoryDropdown() {
-      const select = document.getElementById('newChannelCategory');
-      const currentVal = select.value;
-      select.innerHTML = '<option value="">No Category (Top)</option>';
-      state.channels.filter(c => c.type === 4).forEach(cat => {
-        const opt = document.createElement('option');
-        opt.value = cat.id;
-        opt.innerText = `📁 ${cat.name}`;
-        select.appendChild(opt);
-      });
-      select.value = currentVal;
-    }
-
-    function renderAll() {
-      document.getElementById('channelCount').innerText = state.channels.length;
-      document.getElementById('roleCount').innerText = state.roles.length;
-      updateCategoryDropdown();
-      renderChannels();
-      renderRoles();
-      renderQueue();
-    }
-
-    function renderChannels() {
-      const container = document.getElementById('channelsView');
-      container.innerHTML = '';
-      if (state.channels.length === 0) {
-        container.innerHTML = '<div class="empty-hint">No channels loaded yet.</div>';
-        return;
-      }
-
-      state.channels.forEach(ch => {
-        const isCat = ch.type === 4;
-        const inCat = !isCat && Boolean(ch.parent_id);
-        const prefix = isCat ? '📁' : (ch.type === 2 ? '🔊' : '#');
-        const permBtn = !ch.id.startsWith('temp_')
-          ? `<button class="btn-subtle" onclick="openPermModal('${ch.id}')">Permissions</button>`
-          : '';
-
-        const row = document.createElement('div');
-        row.className = `item-row ${isCat ? 'category' : ''} ${inCat ? 'in-category' : ''}`;
-        row.draggable = true;
-        row.dataset.id = ch.id;
-
-        row.addEventListener('dragstart', (e) => handleDragStart(e, ch.id));
-        row.addEventListener('dragover', (e) => handleDragOver(e, ch));
-        row.addEventListener('dragleave', () => clearDropIndicators(row));
-        row.addEventListener('drop', (e) => handleDrop(e, ch));
-        row.addEventListener('dragend', () => handleDragEnd());
-
-        row.innerHTML = `
-          <span class="drag-handle" title="Hold & drag to move">⋮⋮</span>
-          <span style="color: var(--text-muted); font-size: 13px;">${prefix}</span>
-          <input class="inline-edit" value="${ch.name}" onchange="stageRenameChannel('${ch.id}', this.value)" />
-          ${permBtn}
-          <button class="btn-del" onclick="stageDeleteChannel('${ch.id}', '${ch.name}')">Delete</button>
-        `;
-        container.appendChild(row);
-      });
-    }
-
-    /* Drag & Drop Mechanics */
-    function handleDragStart(e, id) {
-      state.draggedId = id;
-      e.dataTransfer.effectAllowed = 'move';
-      setTimeout(() => {
-        const el = document.querySelector(`.item-row[data-id="${id}"]`);
-        if (el) el.classList.add('dragging');
-      }, 0);
-    }
-
-    function handleDragOver(e, targetCh) {
-      e.preventDefault();
-      if (!state.draggedId || state.draggedId === targetCh.id) return;
-
-      const draggedCh = state.channels.find(c => c.id === state.draggedId);
-      if (!draggedCh) return;
-
-      const row = e.currentTarget;
-      clearDropIndicators(row);
-
-      const rect = row.getBoundingClientRect();
-      const offsetY = e.clientY - rect.top;
-
-      // If dragging a regular channel over a Category, allow dropping directly INTO the category
-      if (draggedCh.type !== 4 && targetCh.type === 4) {
-        if (offsetY > rect.height * 0.25 && offsetY < rect.height * 0.75) {
-          state.dropTargetId = targetCh.id;
-          state.dropMode = 'into';
-          row.classList.add('drop-into-category');
-          return;
-        }
-      }
-
-      // Otherwise show crisp green line above or below the hovered item
-      state.dropTargetId = targetCh.id;
-      if (offsetY < rect.height / 2) {
-        state.dropMode = 'before';
-        row.classList.add('drop-before');
-      } else {
-        state.dropMode = 'after';
-        row.classList.add('drop-after');
-      }
-    }
-
-    function clearDropIndicators(el) {
-      el.classList.remove('drop-before', 'drop-after', 'drop-into-category');
-    }
-
-    function handleDragEnd() {
-      document.querySelectorAll('.item-row').forEach(r => {
-        r.classList.remove('dragging', 'drop-before', 'drop-after', 'drop-into-category');
-      });
-      state.draggedId = null;
-      state.dropTargetId = null;
-      state.dropMode = null;
-    }
-
-    function handleDrop(e, targetCh) {
-      e.preventDefault();
-      const draggedId = state.draggedId;
-      const mode = state.dropMode;
-      handleDragEnd();
-
-      if (!draggedId || draggedId === targetCh.id || !mode) return;
-
-      const fromIdx = state.channels.findIndex(c => c.id === draggedId);
-      if (fromIdx === -1) return;
-      const [moved] = state.channels.splice(fromIdx, 1);
-
-      // Case 1: Moving a Category (moves the category + all its child channels together)
-      if (moved.type === 4) {
-        const children = state.channels.filter(c => c.parent_id === moved.id);
-        state.channels = state.channels.filter(c => c.parent_id !== moved.id);
-
-        let targetIdx = state.channels.findIndex(c => c.id === targetCh.id);
-        if (mode === 'after') {
-          // Skip past target's children if target is also a category
-          if (targetCh.type === 4) {
-            while (targetIdx + 1 < state.channels.length && state.channels[targetIdx + 1].parent_id === targetCh.id) {
-              targetIdx++;
-            }
-          }
-          targetIdx++;
-        }
-        state.channels.splice(targetIdx, 0, moved, ...children);
-      }
-      // Case 2: Moving a regular Channel into or around categories/channels
-      else {
-        if (mode === 'into' && targetCh.type === 4) {
-          moved.parent_id = targetCh.id;
-          const catIdx = state.channels.findIndex(c => c.id === targetCh.id);
-          state.channels.splice(catIdx + 1, 0, moved);
-        } else {
-          let targetIdx = state.channels.findIndex(c => c.id === targetCh.id);
-          if (mode === 'after') targetIdx++;
-
-          // Inherit the category of the drop location
-          if (targetCh.type === 4) {
-            moved.parent_id = mode === 'after' ? targetCh.id : null;
-          } else {
-            moved.parent_id = targetCh.parent_id || null;
-          }
-          state.channels.splice(targetIdx, 0, moved);
-        }
-      }
-
-      stageChannelReorder(moved);
-      renderAll();
-    }
-
-    function stageChannelReorder(movedCh) {
-      // Build full position + parent_id payload for all existing (non-temp) channels
-      const updates = [];
-      let catPos = 0;
-      let chanPos = 0;
-
-      state.channels.forEach(ch => {
-        if (ch.id.startsWith('temp_')) return;
-        if (ch.type === 4) {
-          updates.push({ id: ch.id, position: catPos++ });
-        } else {
-          updates.push({
-            id: ch.id,
-            position: chanPos++,
-            parent_id: ch.parent_id || null
-          });
-        }
-      });
-
-      // Replace any previous pending reorder in queue so only the latest layout is deployed
-      state.queue = state.queue.filter(q => q.type !== 'REORDER_CHANNELS');
-      const targetCat = state.channels.find(c => c.id === movedCh.parent_id);
-      const destLabel = movedCh.type === 4
-        ? `Moved category 📁 ${movedCh.name}`
-        : `Moved #${movedCh.name} → ${targetCat ? '📁 ' + targetCat.name : 'Top Level'}`;
-
-      state.queue.push({
-        id: uid(),
-        type: 'REORDER_CHANNELS',
-        label: destLabel,
-        data: { updates }
-      });
-    }
-
-    /* Roles Rendering */
-    function renderRoles() {
-      const container = document.getElementById('rolesView');
-      container.innerHTML = '';
-      if (state.roles.length === 0) {
-        container.innerHTML = '<div class="empty-hint">No roles loaded yet.</div>';
-        return;
-      }
-      state.roles.forEach(role => {
-        const hex = role.color ? '#' + role.color.toString(16).padStart(6, '0') : '#9c9288';
-        const row = document.createElement('div');
-        row.className = 'item-row';
-        row.innerHTML = `
-          <span style="width: 12px; height: 12px; border-radius: 50%; background: ${hex}; flex-shrink: 0;"></span>
-          <input class="inline-edit" value="${role.name}" onchange="stageEditRoleName('${role.id}', this.value)" />
-          <label class="btn-subtle" style="cursor:pointer;">
-            ${role.hasNewIcon ? '✓ Icon Ready' : '+ Icon'}
-            <input type="file" accept="image/png,image/jpeg" style="display:none" onchange="stageRoleIcon('${role.id}', '${role.name}', this)" />
-          </label>
-          <button class="btn-del" onclick="stageDeleteRole('${role.id}', '${role.name}')">Delete</button>
-        `;
-        container.appendChild(row);
-      });
-    }
-
-    function renderQueue() {
-      const container = document.getElementById('queueList');
-      const count = state.queue.length;
-      document.getElementById('queueCount').innerText = count;
-      const badge = document.getElementById('queueBadge');
-      badge.innerText = count;
-      badge.classList.toggle('has-items', count > 0);
-
-      if (count === 0) {
-        container.innerHTML = '<div class="empty-hint">Your local edits will queue here before syncing to Discord.</div>';
-        return;
-      }
-      container.innerHTML = '';
-      state.queue.forEach(item => {
-        const isDel = item.type.includes('DELETE');
-        const isMove = item.type === 'REORDER_CHANNELS';
-        const div = document.createElement('div');
-        div.className = `queue-card ${isDel ? 'del' : ''} ${isMove ? 'move' : ''}`;
-        div.innerHTML = `
-          <div>
-            <span class="queue-meta">${item.type.replaceAll('_', ' ')}</span>
-            <span>${item.label}</span>
-          </div>
-          <button class="btn-subtle" style="padding: 2px 7px;" onclick="removeQueueItem('${item.id}')">✕</button>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    /* Permission Modal Logic */
-    function openPermModal(channelId) {
-      const ch = state.channels.find(c => c.id === channelId);
-      if (!ch) return;
-      state.editingChannelId = channelId;
-
-      const labelPrefix = ch.type === 4 ? 'Category' : 'Channel';
-      document.getElementById('permModalTitle').innerText = `${labelPrefix}: ${ch.name}`;
-
-      const select = document.getElementById('permRoleSelect');
-      select.innerHTML = '';
-      state.allRoles.forEach(role => {
-        const opt = document.createElement('option');
-        opt.value = role.id;
-        opt.innerText = role.name === '@everyone' ? '@everyone (Default)' : `@${role.name}`;
-        select.appendChild(opt);
-      });
-
-      loadRoleOverwritesIntoModal();
-      document.getElementById('permModal').classList.remove('hidden');
-    }
-
-    function closePermModal() {
-      document.getElementById('permModal').classList.add('hidden');
-      state.editingChannelId = null;
-    }
-
-    function loadRoleOverwritesIntoModal() {
-      const ch = state.channels.find(c => c.id === state.editingChannelId);
-      const roleId = document.getElementById('permRoleSelect').value;
-      const overwrites = ch.permission_overwrites || [];
-      const existing = overwrites.find(o => o.id === roleId);
-
-      const allowBits = existing ? BigInt(existing.allow) : 0n;
-      const denyBits = existing ? BigInt(existing.deny) : 0n;
-
-      state.tempPermStates = {};
-      PERMISSIONS.forEach(p => {
-        if ((allowBits & p.bit) === p.bit) state.tempPermStates[p.key] = 'allow';
-        else if ((denyBits & p.bit) === p.bit) state.tempPermStates[p.key] = 'deny';
-        else state.tempPermStates[p.key] = 'neutral';
-      });
-
-      renderPermRows();
-    }
-
-    function setPermChoice(key, choice) {
-      state.tempPermStates[key] = choice;
-      renderPermRows();
-    }
-
-    function renderPermRows() {
-      const container = document.getElementById('permListContainer');
-      container.innerHTML = '';
-      PERMISSIONS.forEach(p => {
-        const current = state.tempPermStates[p.key] || 'neutral';
-        const row = document.createElement('div');
-        row.className = 'perm-row';
-        row.innerHTML = `
-          <div class="perm-info">
-            <span class="perm-name">${p.name}</span>
-            <span class="perm-desc">${p.desc}</span>
-          </div>
-          <div class="tri-toggle">
-            <button class="tri-btn deny ${current === 'deny' ? 'active' : ''}" onclick="setPermChoice('${p.key}', 'deny')">✕</button>
-            <button class="tri-btn neutral ${current === 'neutral' ? 'active' : ''}" onclick="setPermChoice('${p.key}', 'neutral')">/</button>
-            <button class="tri-btn allow ${current === 'allow' ? 'active' : ''}" onclick="setPermChoice('${p.key}', 'allow')">✓</button>
-          </div>
-        `;
-        container.appendChild(row);
-      });
-    }
-
-    function stageChannelPermissions() {
-      const ch = state.channels.find(c => c.id === state.editingChannelId);
-      const roleId = document.getElementById('permRoleSelect').value;
-      const role = state.allRoles.find(r => r.id === roleId);
-      if (!ch || !role) return;
-
-      let allow = 0n;
-      let deny = 0n;
-      PERMISSIONS.forEach(p => {
-        const choice = state.tempPermStates[p.key];
-        if (choice === 'allow') allow |= p.bit;
-        if (choice === 'deny') deny |= p.bit;
-      });
-
-      if (!ch.permission_overwrites) ch.permission_overwrites = [];
-      const idx = ch.permission_overwrites.findIndex(o => o.id === roleId);
-      const newOverwrite = { id: roleId, type: 0, allow: allow.toString(), deny: deny.toString() };
-      if (idx >= 0) ch.permission_overwrites[idx] = newOverwrite;
-      else ch.permission_overwrites.push(newOverwrite);
-
-      state.queue.push({
-        id: uid(),
-        type: 'EDIT_CHANNEL_PERMS',
-        target_id: ch.id,
-        label: `${ch.name} • ${role.name}`,
-        data: {
-          overwrite_id: roleId,
-          overwrite_type: 0,
-          allow: allow.toString(),
-          deny: deny.toString()
-        }
-      });
-
-      renderQueue();
-      closePermModal();
-    }
-
-    /* Staging Functions */
-    function stageCreateChannel() {
-      const nameInput = document.getElementById('newChannelName');
-      const name = nameInput.value.trim();
-      const channel_type = parseInt(document.getElementById('newChannelType').value);
-      const parent_id = channel_type === 4 ? null : (document.getElementById('newChannelCategory').value || null);
-      if (!name) return;
-
-      const tempId = 'temp_' + uid();
-      const newCh = { id: tempId, name, type: channel_type, parent_id, permission_overwrites: [] };
-
-      if (parent_id) {
-        const catIdx = state.channels.findIndex(c => c.id === parent_id);
-        if (catIdx >= 0) state.channels.splice(catIdx + 1, 0, newCh);
-        else state.channels.push(newCh);
-      } else {
-        state.channels.push(newCh);
-      }
-
-      const catObj = state.channels.find(c => c.id === parent_id);
-      const label = catObj ? `${name} (in 📁 ${catObj.name})` : name;
-
-      state.queue.push({
-        id: uid(),
-        type: 'CREATE_CHANNEL',
-        label,
-        data: { name, channel_type, parent_id }
-      });
-      nameInput.value = '';
-      renderAll();
-    }
-
-    function stageRenameChannel(id, newName) {
-      const ch = state.channels.find(c => c.id === id);
-      if (!ch || ch.name === newName.trim()) return;
-      ch.name = newName.trim();
-      if (!id.startsWith('temp_')) {
-        state.queue.push({ id: uid(), type: 'RENAME_CHANNEL', target_id: id, label: `→ ${ch.name}`, data: { name: ch.name } });
-      }
-      renderQueue();
-    }
-
-    function stageDeleteChannel(id, name) {
-      state.channels = state.channels.filter(c => c.id !== id);
-      if (!id.startsWith('temp_')) {
-        state.queue.push({ id: uid(), type: 'DELETE_CHANNEL', target_id: id, label: `#${name}`, data: {} });
-      }
-      renderAll();
-    }
-
-    function stageCreateRole() {
-      const nameInput = document.getElementById('newRoleName');
-      const color = document.getElementById('newRoleColor').value;
-      const name = nameInput.value.trim();
-      if (!name) return;
-
-      const tempId = 'temp_' + uid();
-      const roleObj = { id: tempId, name, color: parseInt(color.slice(1), 16) };
-      state.roles.unshift(roleObj);
-      state.allRoles.unshift(roleObj);
-      state.queue.push({ id: uid(), type: 'CREATE_ROLE', label: name, data: { name, color } });
-      nameInput.value = '';
-      renderAll();
-    }
-
-    function stageEditRoleName(id, newName) {
-      const role = state.roles.find(r => r.id === id);
-      if (!role || role.name === newName.trim()) return;
-      role.name = newName.trim();
-      if (!id.startsWith('temp_')) {
-        state.queue.push({ id: uid(), type: 'EDIT_ROLE', target_id: id, label: `Rename → ${role.name}`, data: { name: role.name } });
-      }
-      renderQueue();
-    }
-
-    function stageRoleIcon(id, roleName, inputEl) {
-      const file = inputEl.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        const role = state.roles.find(r => r.id === id);
-        if (role) role.hasNewIcon = true;
-        state.queue.push({ id: uid(), type: 'EDIT_ROLE', target_id: id, label: `Icon for @${roleName}`, data: { icon_base64: reader.result } });
-        renderAll();
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function stageDeleteRole(id, name) {
-      state.roles = state.roles.filter(r => r.id !== id);
-      state.allRoles = state.allRoles.filter(r => r.id !== id);
-      if (!id.startsWith('temp_')) {
-        state.queue.push({ id: uid(), type: 'DELETE_ROLE', target_id: id, label: `@${name}`, data: {} });
-      }
-      renderAll();
-    }
-
-    function removeQueueItem(id) {
-      state.queue = state.queue.filter(q => q.id !== id);
-      renderQueue();
-    }
-
-    function clearQueue() {
-      state.queue = [];
-      renderQueue();
-    }
-
-    async function deployQueue() {
-      if (state.queue.length === 0) return;
-      const token = document.getElementById('botToken').value.trim();
-      const guild_id = document.getElementById('guildId').value.trim();
-
-      setStatus(`Syncing ${state.queue.length} edits...`);
-      try {
-        const res = await fetch('/api/deploy', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token, guild_id, actions: state.queue })
-        });
-        const data = await res.json();
-        const failed = data.results.filter(r => r.status === 'error');
-        if (failed.length > 0) {
-          setStatus(`Error: ${failed[0].detail}`);
-        } else {
-          setStatus("Synced Live");
-          await loadServer();
-        }
-      } catch (err) {
-        setStatus("Deploy failed");
-      }
-    }
-
-    function setStatus(msg) {
-      document.getElementById('statusLabel').innerText = msg;
-    }
-  </script>
-</body>
-</html>
+      <table>
+        <thead><tr><th>Time</th><th>Event</th><th>Server</th><th>User Hash</th><th>IP</th><th>Details</th></tr></thead>
+        <tbody>{table_rows}</tbody>
+      </table>
+    </body>
+    </html>
+    """
