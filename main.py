@@ -185,7 +185,7 @@ async def serve_ui():
 async def submit_review(payload: ReviewPayload):
     webhook_url = get_review_webhook()
     if not webhook_url:
-        raise HTTPException(status_code=503, detail="Review webhook is not configured yet. Ask the admin to set it in the Admin Panel.")
+        raise HTTPException(status_code=503, detail="Review webhook is not configured yet. Set it in the Admin Panel.")
 
     stars = max(1, min(5, int(payload.stars)))
     star_visual = "★" * stars + "☆" * (5 - stars)
