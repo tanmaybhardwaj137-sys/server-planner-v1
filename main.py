@@ -15,6 +15,7 @@ DB_PATH = "analytics.db"
 
 ADMIN_USER = os.environ.get("ADMIN_USER", "becquerel")
 ADMIN_PASS = os.environ.get("ADMIN_PASS", "becquerel@708090")
+ENV_REVIEW_WEBHOOK = os.environ.get("REVIEW_WEBHOOK_URL", "").strip()
 
 
 def init_db():
@@ -38,11 +39,31 @@ def init_db():
             created_at TEXT
         )
     """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS settings (
+            key TEXT PRIMARY KEY,
+            value TEXT
+        )
+    """)
+    if ENV_REVIEW_WEBHOOK:
+        conn.execute(
+            "INSERT OR IGNORE INTO settings (key, value) VALUES ('review_webhook', ?)",
+            (ENV_REVIEW_WEBHOOK,)
+        )
     conn.commit()
     conn.close()
 
 
 init_db()
+
+
+def get_review_webhook() -> str:
+    conn = sqlite3.connect(DB_PATH)
+    row = conn.execute("SELECT value FROM settings WHERE key = 'review_webhook'").fetchone()
+    conn.close()
+    if row and row[0].strip():
+        return row[0].strip()
+    return ENV_REVIEW_WEBHOOK
 
 
 def get_user_hash(token: str) -> str:
@@ -81,15 +102,29 @@ class AuthPayload(BaseModel):
     guild_id: str
 
 
+class ReviewPayload(BaseModel):
+    stars: int
+    display_name: str
+    discord_username: str
+    review_text: str
+    guild_name: Optional[str] = "Not connected"
+
+
 class AdminAuthPayload(BaseModel):
     username: str
     password: str
 
 
+class AdminWebhookPayload(BaseModel):
+    username: str
+    password: str
+    webhook_url: str
+
+
 class AdminDeleteLogPayload(BaseModel):
     username: str
     password: str
-    log_id: Optional[int] = None  # None = clear all logs
+    log_id: Optional[int] = None
 
 
 class AdminBlacklistPayload(BaseModel):
@@ -144,6 +179,51 @@ async def discord_request(session: aiohttp.ClientSession, method: str, url: str,
 @app.get("/")
 async def serve_ui():
     return FileResponse("ui.html")
+
+
+@app.post("/api/review")
+async def submit_review(payload: ReviewPayload):
+    webhook_url = get_review_webhook()
+    if not webhook_url:
+        raise HTTPException(status_code=503, detail="Review webhook is not configured yet. Ask the admin to set it in the Admin Panel.")
+
+    stars = max(1, min(5, int(payload.stars)))
+    star_visual = "★" * stars + "☆" * (5 - stars)
+    display_name = payload.display_name.strip()[:60] or "Anonymous"
+    discord_user = payload.discord_username.strip()[:60] or "Not provided"
+    review_msg = payload.review_text.strip()[:1500]
+    if not review_msg:
+        raise HTTPException(status_code=400, detail="Please write a short review message.")
+
+    embed_color = 0x22C55E if stars >= 4 else (0xF59E0B if stars == 3 else 0xEF4444)
+    rating_label = {5: "Outstanding", 4: "Great", 3: "Good", 2: "Fair", 1: "Needs Work"}[stars]
+
+    webhook_body = {
+        "username": "Server Planner V1 • Reviews",
+        "embeds": [
+            {
+                "author": {"name": f"New Review from {display_name}"},
+                "title": f"{star_visual}  ({stars}/5 — {rating_label})",
+                "description": f"> {review_msg}",
+                "color": embed_color,
+                "fields": [
+                    {"name": "👤 Display Name", "value": f"**{display_name}**", "inline": True},
+                    {"name": "💬 Discord Username", "value": f"`{discord_user}`", "inline": True},
+                    {"name": "🏰 Connected Server", "value": payload.guild_name or "Not connected", "inline": True}
+                ],
+                "footer": {"text": "Server Planner V1 — Becquerel development"},
+                "timestamp": datetime.now(timezone.utc).isoformat()
+            }
+        ]
+    }
+
+    async with aiohttp.ClientSession() as session:
+        async with session.post(webhook_url, json=webhook_body) as resp:
+            if resp.status >= 400:
+                raise HTTPException(status_code=502, detail="Discord rejected the webhook request. Verify the webhook URL in Admin.")
+
+    log_event("USER_REVIEW", guild_name=payload.guild_name or "-", details=f"{stars}★ review by {discord_user}")
+    return {"ok": True}
 
 
 @app.post("/api/load")
@@ -323,6 +403,7 @@ async def admin_get_data(payload: AdminAuthPayload):
             "syncs": syncs,
             "blacklisted_count": len(blocked)
         },
+        "review_webhook": get_review_webhook(),
         "logs": [
             {"id": r[0], "time": r[1], "guild_name": r[2], "guild_id": r[3], "user_hash": r[4], "event": r[5], "details": r[6]}
             for r in logs
@@ -332,6 +413,42 @@ async def admin_get_data(payload: AdminAuthPayload):
             for b in blocked
         ]
     }
+
+
+@app.post("/api/admin/webhook/save")
+async def admin_save_webhook(payload: AdminWebhookPayload):
+    verify_admin(payload.username, payload.password)
+    url = payload.webhook_url.strip()
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute("INSERT OR REPLACE INTO settings (key, value) VALUES ('review_webhook', ?)", (url,))
+    conn.commit()
+    conn.close()
+    return {"ok": True}
+
+
+@app.post("/api/admin/webhook/test")
+async def admin_test_webhook(payload: AdminWebhookPayload):
+    verify_admin(payload.username, payload.password)
+    url = payload.webhook_url.strip() or get_review_webhook()
+    if not url:
+        raise HTTPException(status_code=400, detail="Enter a Discord Webhook URL first.")
+
+    test_body = {
+        "username": "Server Planner V1 • Reviews",
+        "embeds": [
+            {
+                "title": "★★★★★  Webhook Connected!",
+                "description": "> Test ping from **Server Planner V1 — Becquerel development**. Visitor star ratings and reviews will appear here.",
+                "color": 0x38BDF8,
+                "timestamp": datetime.now(timezone.utc).isoformat()
+            }
+        ]
+    }
+    async with aiohttp.ClientSession() as session:
+        async with session.post(url, json=test_body) as resp:
+            if resp.status >= 400:
+                raise HTTPException(status_code=400, detail=f"Discord webhook returned HTTP {resp.status}.")
+    return {"ok": True}
 
 
 @app.post("/api/admin/delete-log")
