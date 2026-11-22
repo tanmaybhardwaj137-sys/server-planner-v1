@@ -80,7 +80,7 @@ def get_headers(token: str) -> Dict[str, str]:
     return {
         "Authorization": clean_token,
         "Content-Type": "application/json",
-        "X-Audit-Log-Reason": "Server Planner V1 — Becquerel development"
+        "X-Audit-Log-Reason": "Server Planner V1 - Becquerel development"
     }
 
 
@@ -112,9 +112,22 @@ async def load_guild(payload: AuthPayload, request: Request):
         guild = await discord_request(session, "GET", f"{DISCORD_API}/guilds/{payload.guild_id}", headers)
         channels = await discord_request(session, "GET", f"{DISCORD_API}/guilds/{payload.guild_id}/channels", headers)
         roles = await discord_request(session, "GET", f"{DISCORD_API}/guilds/{payload.guild_id}/roles", headers)
+        bot_user = await discord_request(session, "GET", f"{DISCORD_API}/users/@me", headers)
+        bot_member = await discord_request(session, "GET", f"{DISCORD_API}/guilds/{payload.guild_id}/members/{bot_user['id']}", headers)
 
     channels.sort(key=lambda c: c.get("position", 0))
     roles.sort(key=lambda r: r.get("position", 0), reverse=True)
+
+    # Determine the bot's highest role position so UI can mark un-editable higher roles with a lock
+    bot_role_ids = set(bot_member.get("roles", []))
+    bot_top_pos = 0
+    for r in roles:
+        if r["id"] in bot_role_ids and r.get("position", 0) > bot_top_pos:
+            bot_top_pos = r["position"]
+
+    # If the bot owns the server (rare), give max privilege
+    if guild.get("owner_id") == bot_user["id"]:
+        bot_top_pos = 999999
 
     log_event(
         "LOAD_SERVER",
@@ -128,7 +141,8 @@ async def load_guild(payload: AuthPayload, request: Request):
     return {
         "guild": {"id": guild["id"], "name": guild["name"], "icon": guild.get("icon")},
         "channels": channels,
-        "roles": roles
+        "roles": roles,
+        "bot_top_position": bot_top_pos
     }
 
 
@@ -146,26 +160,62 @@ async def deploy_changes(payload: DeployPayload, request: Request):
                     body = {"name": d["name"], "type": d.get("channel_type", 0)}
                     if d.get("parent_id"):
                         body["parent_id"] = d["parent_id"]
+                    if d.get("topic"):
+                        body["topic"] = d["topic"]
+                    if d.get("rate_limit_per_user") is not None:
+                        body["rate_limit_per_user"] = int(d["rate_limit_per_user"])
                     await discord_request(session, "POST", f"{DISCORD_API}/guilds/{payload.guild_id}/channels", headers, body)
 
                 elif t == "RENAME_CHANNEL":
                     await discord_request(session, "PATCH", f"{DISCORD_API}/channels/{action.target_id}", headers, {"name": d["name"]})
 
+                elif t == "EDIT_CHANNEL_META":
+                    body = {}
+                    if "topic" in d:
+                        body["topic"] = d["topic"]
+                    if "rate_limit_per_user" in d:
+                        body["rate_limit_per_user"] = int(d["rate_limit_per_user"])
+                    if "nsfw" in d:
+                        body["nsfw"] = bool(d["nsfw"])
+                    await discord_request(session, "PATCH", f"{DISCORD_API}/channels/{action.target_id}", headers, body)
+
                 elif t == "DELETE_CHANNEL":
                     await discord_request(session, "DELETE", f"{DISCORD_API}/channels/{action.target_id}", headers)
 
                 elif t == "REORDER_CHANNELS":
-                    # Bulk update positions and parent categories in one API call
-                    updates = d.get("updates", [])
-                    if updates:
-                        await discord_request(session, "PATCH", f"{DISCORD_API}/guilds/{payload.guild_id}/channels", headers, updates)
+                    # Step 1: Update any changed parent_id individually (Discord API allows only 1 parent_id change per request)
+                    parent_changes = d.get("parent_changes", [])
+                    for pc in parent_changes:
+                        await discord_request(
+                            session,
+                            "PATCH",
+                            f"{DISCORD_API}/channels/{pc['id']}",
+                            headers,
+                            {"parent_id": pc["parent_id"]}
+                        )
+
+                    # Step 2: Bulk update positions only
+                    pos_updates = d.get("updates", [])
+                    if pos_updates:
+                        await discord_request(
+                            session,
+                            "PATCH",
+                            f"{DISCORD_API}/guilds/{payload.guild_id}/channels",
+                            headers,
+                            pos_updates
+                        )
 
                 elif t == "EDIT_CHANNEL_PERMS":
                     body = {"allow": str(d["allow"]), "deny": str(d["deny"]), "type": d.get("overwrite_type", 0)}
                     await discord_request(session, "PUT", f"{DISCORD_API}/channels/{action.target_id}/permissions/{d['overwrite_id']}", headers, body)
 
                 elif t == "CREATE_ROLE":
-                    body = {"name": d["name"], "color": int(d.get("color", "#d96b43").lstrip("#"), 16)}
+                    body = {
+                        "name": d["name"],
+                        "color": int(d.get("color", "#38bdf8").lstrip("#"), 16)
+                    }
+                    if d.get("permissions") is not None:
+                        body["permissions"] = str(d["permissions"])
                     if d.get("icon_base64"):
                         body["icon"] = d["icon_base64"]
                     await discord_request(session, "POST", f"{DISCORD_API}/guilds/{payload.guild_id}/roles", headers, body)
@@ -176,9 +226,16 @@ async def deploy_changes(payload: DeployPayload, request: Request):
                         body["name"] = d["name"]
                     if "color" in d:
                         body["color"] = int(d["color"].lstrip("#"), 16)
+                    if "permissions" in d:
+                        body["permissions"] = str(d["permissions"])
                     if d.get("icon_base64"):
                         body["icon"] = d["icon_base64"]
                     await discord_request(session, "PATCH", f"{DISCORD_API}/guilds/{payload.guild_id}/roles/{action.target_id}", headers, body)
+
+                elif t == "REORDER_ROLES":
+                    updates = d.get("updates", [])
+                    if updates:
+                        await discord_request(session, "PATCH", f"{DISCORD_API}/guilds/{payload.guild_id}/roles", headers, updates)
 
                 elif t == "DELETE_ROLE":
                     await discord_request(session, "DELETE", f"{DISCORD_API}/guilds/{payload.guild_id}/roles/{action.target_id}", headers)
@@ -218,22 +275,22 @@ async def admin_panel(key: str = ""):
     <!DOCTYPE html>
     <html>
     <head>
-      <title>Admin — Server Planner V1</title>
+      <title>Admin - Server Planner V1</title>
       <style>
-        body {{ background:#110e0c; color:#f2ede7; font-family:Inter,sans-serif; padding:32px; }}
-        h1 {{ font-weight:500; margin-bottom:20px; }}
+        body {{ background:#050507; color:#f4f5f8; font-family:Inter,sans-serif; padding:32px; }}
+        h1 {{ font-weight:600; margin-bottom:20px; }}
         .stats {{ display:flex; gap:16px; margin-bottom:24px; }}
-        .card {{ background:#1b1715; border:1px solid rgba(255,245,235,0.1); padding:18px 24px; border-radius:14px; min-width:180px; }}
-        .num {{ font-size:28px; font-weight:600; color:#d96b43; }}
-        .lbl {{ font-size:12px; color:#9c9288; margin-top:4px; }}
-        table {{ width:100%; border-collapse:collapse; background:#1b1715; border-radius:14px; overflow:hidden; font-size:13px; }}
-        th, td {{ padding:12px 14px; text-align:left; border-bottom:1px solid rgba(255,245,235,0.07); }}
-        th {{ color:#9c9288; font-size:11px; text-transform:uppercase; }}
-        .tag {{ background:rgba(217,107,67,0.16); color:#d96b43; padding:3px 8px; border-radius:6px; font-size:11px; }}
+        .card {{ background:#0d0e12; border:1px solid rgba(255,255,255,0.1); padding:18px 24px; border-radius:12px; min-width:180px; }}
+        .num {{ font-size:28px; font-weight:600; color:#38bdf8; }}
+        .lbl {{ font-size:12px; color:#8a909e; margin-top:4px; }}
+        table {{ width:100%; border-collapse:collapse; background:#0d0e12; border-radius:12px; overflow:hidden; font-size:13px; }}
+        th, td {{ padding:12px 14px; text-align:left; border-bottom:1px solid rgba(255,255,255,0.07); }}
+        th {{ color:#8a909e; font-size:11px; text-transform:uppercase; }}
+        .tag {{ background:rgba(56,189,248,0.15); color:#38bdf8; padding:3px 8px; border-radius:6px; font-size:11px; }}
       </style>
     </head>
     <body>
-      <h1>Becquerel development — Management Panel</h1>
+      <h1>Becquerel development - Management Panel</h1>
       <div class="stats">
         <div class="card"><div class="num">{visits}</div><div class="lbl">Total Page Visits</div></div>
         <div class="card"><div class="num">{unique_users}</div><div class="lbl">Unique Bot Users</div></div>
