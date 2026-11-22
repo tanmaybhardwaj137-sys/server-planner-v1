@@ -654,7 +654,7 @@
     .custom-ctx-menu {
       position: fixed;
       z-index: 999;
-      min-width: 235px;
+      min-width: 240px;
       background: var(--bg-panel);
       border: 1px solid var(--border-bright);
       border-radius: 14px;
@@ -886,7 +886,7 @@
       <div class="stage-header">
         <div>
           <h1 class="stage-title" id="viewHeading">Channels & Categories</h1>
-          <p class="stage-sub" id="viewSubheading">Click + on any category to create a channel inside it, right-click any item to copy its ID, or drag nodes to reorder.</p>
+          <p class="stage-sub" id="viewSubheading">Click + on any category to create a channel inside it, right-click anywhere to add categories or copy IDs, or drag nodes to reorder.</p>
         </div>
         <div class="status-chip">
           <span class="pulse-node"></span>
@@ -992,6 +992,40 @@
 
   <!-- CUSTOM THEME-ADAPTIVE RIGHT-CLICK CONTEXT MENU -->
   <div id="customContextMenu" class="custom-ctx-menu hidden"></div>
+
+  <!-- MODAL: Global Quick Create Category / Channel (From Right-Click Menu, Defaults to Category) -->
+  <div class="modal-backdrop hidden" id="globalCreateModal">
+    <div class="modal-card" style="width: 450px;">
+      <div class="modal-head">
+        <h3>Create Category or Channel</h3>
+        <button class="hud-btn" onclick="closeAllModals()">ESC</button>
+      </div>
+      <div style="padding: 20px;">
+        <div class="field-group">
+          <label>TYPE</label>
+          <select id="globalCreateType" onchange="toggleGlobalCreateParent()">
+            <option value="4">📁 Category (Default)</option>
+            <option value="0"># Text Channel</option>
+            <option value="2">🔊 Voice Channel</option>
+            <option value="5">📢 Announcement Channel</option>
+            <option value="13">🎭 Stage Channel</option>
+          </select>
+        </div>
+        <div class="field-group hidden" id="globalCreateParentGroup">
+          <label>PARENT CATEGORY</label>
+          <select id="globalCreateParent"></select>
+        </div>
+        <div class="field-group">
+          <label>NAME</label>
+          <input type="text" id="globalCreateName" placeholder="e.g. Community or general-chat" onkeydown="if(event.key==='Enter') confirmGlobalCreate()" />
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="hud-btn" onclick="closeAllModals()">Cancel</button>
+        <button class="btn-contrast" onclick="confirmGlobalCreate()">+ Stage Creation</button>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL: Star Rating & Discord Webhook Review -->
   <div class="modal-backdrop hidden" id="reviewModal">
@@ -1261,7 +1295,6 @@
     });
 
     document.addEventListener('contextmenu', (e) => {
-      // Allow native Chrome menu inside text inputs or when holding Shift
       if (e.shiftKey || ['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
 
       e.preventDefault();
@@ -1302,20 +1335,17 @@
           }
         }
       } else {
+        /* Default Right-Click Menu (Empty Space) */
         itemsHtml += `<div class="ctx-header">Server Planner V1</div>`;
+        itemsHtml += `<button class="ctx-item" onclick="openGlobalCreateModal()"><span>+ New Category / Channel</span><span class="ctx-shortcut">NEW</span></button>`;
         itemsHtml += `<button class="ctx-item" onclick="loadServer(true)"><span>↻ Refresh Server</span><span class="ctx-shortcut">Alt+R</span></button>`;
-        itemsHtml += `<button class="ctx-item" onclick="undoLastQueueItem()"><span>↩ Undo Last Staged Edit</span><span class="ctx-shortcut">Ctrl+Z</span></button>`;
-        itemsHtml += `<button class="ctx-item" onclick="deployQueue()"><span>⚡ Execute Batch Sync</span><span class="ctx-shortcut">Ctrl+↵</span></button>`;
-        itemsHtml += `<div class="ctx-divider"></div>`;
-        itemsHtml += `<button class="ctx-item" onclick="toggleTheme()"><span>◐ Switch Dark / Glow Theme</span><span class="ctx-shortcut">UI</span></button>`;
-        itemsHtml += `<button class="ctx-item" onclick="openReviewModal()"><span>★ Rate & Leave a Review</span><span class="ctx-shortcut">5★</span></button>`;
       }
 
       ctxMenu.innerHTML = itemsHtml;
       ctxMenu.classList.remove('hidden');
 
-      const menuW = 240;
-      const menuH = ctxMenu.offsetHeight || 220;
+      const menuW = 245;
+      const menuH = ctxMenu.offsetHeight || 160;
       const posX = (e.clientX + menuW > window.innerWidth) ? window.innerWidth - menuW - 12 : e.clientX;
       const posY = (e.clientY + menuH > window.innerHeight) ? window.innerHeight - menuH - 12 : e.clientY;
       ctxMenu.style.left = `${posX}px`;
@@ -1325,6 +1355,63 @@
     function copyText(text, statusMsg) {
       navigator.clipboard?.writeText(text);
       setStatus(statusMsg.toUpperCase());
+    }
+
+    /* Global Right-Click Modal: Create Category (Default) or Channel */
+    function openGlobalCreateModal() {
+      document.getElementById('globalCreateType').value = "4"; // Defaults to Category
+      document.getElementById('globalCreateName').value = "";
+      document.getElementById('globalCreateParentGroup').classList.add('hidden');
+
+      const parentSelect = document.getElementById('globalCreateParent');
+      parentSelect.innerHTML = '<option value="">No Category (Top Level)</option>';
+      state.channels.filter(c => c.type === 4).forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat.id;
+        opt.innerText = `📁 ${cat.name}`;
+        parentSelect.appendChild(opt);
+      });
+
+      document.getElementById('globalCreateModal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('globalCreateName').focus(), 50);
+    }
+
+    function toggleGlobalCreateParent() {
+      const type = document.getElementById('globalCreateType').value;
+      document.getElementById('globalCreateParentGroup').classList.toggle('hidden', type === '4');
+    }
+
+    function confirmGlobalCreate() {
+      const channel_type = parseInt(document.getElementById('globalCreateType').value);
+      const name = document.getElementById('globalCreateName').value.trim();
+      const parent_id = channel_type === 4 ? null : (document.getElementById('globalCreateParent').value || null);
+      if (!name) return;
+
+      const tempId = 'temp_' + uid();
+      const newCh = { id: tempId, name, type: channel_type, parent_id, permission_overwrites: [] };
+      if (parent_id) {
+        const catIdx = state.channels.findIndex(c => c.id === parent_id);
+        if (catIdx >= 0) state.channels.splice(catIdx + 1, 0, newCh);
+        else state.channels.push(newCh);
+      } else {
+        state.channels.push(newCh);
+      }
+
+      const catObj = state.channels.find(c => c.id === parent_id);
+      const label = channel_type === 4
+        ? `📁 ${name}`
+        : (catObj ? `${name} (in 📁 ${catObj.name})` : name);
+
+      state.queue.push({
+        id: uid(),
+        type: 'CREATE_CHANNEL',
+        label,
+        data: { name, channel_type, parent_id: parent_id && !parent_id.startsWith('temp_') ? parent_id : null }
+      });
+
+      closeAllModals();
+      switchTab('channels');
+      renderAll();
     }
 
     function undoLastQueueItem() {
@@ -1430,7 +1517,7 @@
       document.getElementById('emojiComposer').classList.toggle('hidden', tab !== 'emojis');
 
       const titles = {
-        channels: ['Channels & Categories', 'Click + on any category to create a channel inside it, right-click any item to copy its ID, or drag nodes to reorder.'],
+        channels: ['Channels & Categories', 'Click + on any category to create a channel inside it, right-click anywhere to add categories or copy IDs, or drag nodes to reorder.'],
         roles: ['Roles & Hierarchy', 'Drag roles (including bot roles) up or down to slot custom roles between them, or right-click to copy Role IDs.'],
         emojis: ['Custom Emojis', 'Upload new PNG/GIF custom emojis or remove unused ones in batch.'],
         preview: ['Live Discord Preview', 'Real-time visual preview of your channel sidebar and role hierarchy before syncing.'],
@@ -1785,7 +1872,7 @@
       });
     }
 
-    /* ROLES RENDER: Managed Bot Roles stay draggable so custom roles can slot between them */
+    /* ROLES RENDER */
     function isRoleAboveBot(role) {
       if (role.id.startsWith('temp_')) return false;
       if (state.botTopPosition > 0 && role.position >= state.botTopPosition) return true;
@@ -2023,9 +2110,8 @@
 
     function applyRolePreset(preset) {
       if (preset === 'owner') {
-        state.tempRoleBitfield = (1n << 3n); // Administrator
+        state.tempRoleBitfield = (1n << 3n);
       } else if (preset === 'manager') {
-        // Every operational permission enabled EXCEPT Administrator (1n << 3n)
         let managerBits = 0n;
         ROLE_POWERS.forEach(p => {
           if (p.key !== 'ADMINISTRATOR') {
@@ -2189,6 +2275,7 @@
       document.getElementById('channelMetaModal').classList.add('hidden');
       document.getElementById('rolePowersModal').classList.add('hidden');
       document.getElementById('catQuickCreateModal').classList.add('hidden');
+      document.getElementById('globalCreateModal').classList.add('hidden');
       document.getElementById('adminModal').classList.add('hidden');
       document.getElementById('reviewModal').classList.add('hidden');
       state.editingChannelId = null;
